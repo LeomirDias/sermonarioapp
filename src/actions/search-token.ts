@@ -1,8 +1,9 @@
 "use server";
 
+import { eq } from "drizzle-orm";
+
 import { db } from "@/db";
 import { accessTokensTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
 
 export async function searchTokenByEmail(email: string) {
     try {

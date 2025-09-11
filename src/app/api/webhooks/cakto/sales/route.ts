@@ -6,7 +6,7 @@ import NewSubscriptionEmail from "@/components/emails/new-sale";
 import { db } from "@/db";
 import { accessTokensTable } from "@/db/schema";
 
-const CAKTO_WEBHOOK_SECRET = process.env.CAKTO_WEBHOOK_SECRET_EXTERNAL_SIGNATURES!;
+const CAKTO_WEBHOOK_SECRET = process.env.CAKTO_WEBHOOK_SECRET_SALES!;
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 // Função para gerar token único
