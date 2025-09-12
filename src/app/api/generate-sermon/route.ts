@@ -10,6 +10,15 @@ export async function POST(req: Request) {
 
         const prompt = `
 Você é um assistente que cria sermões estruturados para pastores.
+
+Pontos importantes:
+
+- Desenvolva um sermão com o objetivo de ser uma pregação para uma igreja evangélica.
+- Desenvolva as seções de forma clara e objetiva.
+- Crie uma boa estrutura de introdução para chamar a atenção do público para o assunto e gerar curiosidade sobre a pauta.
+- Inclua reflecções e conclusões a cerca do assunto na seção de conclusão.
+- Na oração final tente buscar orações apropriadas para igrejas evangélicas e que remetem ao assunto do sermão.
+
 Crie um sermão com o seguinte formato em JSON:
 
 {
