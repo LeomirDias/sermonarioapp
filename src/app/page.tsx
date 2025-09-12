@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Phone } from "lucide-react";
+import { Mail } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -87,12 +87,12 @@ export default function Home() {
             </p>
 
             <div className="space-y-2">
-              <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
+              {/* <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
                 <a href="https://wa.me/64992834346" target="_blank" rel="noopener noreferrer">
                   <Phone className="w-4 h-4 mr-2" />
                   WhatsApp
                 </a>
-              </Button>
+              </Button> */}
 
               <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
                 <a href="mailto:sermonario@gmail.com">

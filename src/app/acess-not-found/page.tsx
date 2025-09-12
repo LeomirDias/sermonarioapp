@@ -1,4 +1,4 @@
-import { Mail, Phone, ShieldAlert } from "lucide-react";
+import { Mail, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -52,12 +52,12 @@ export default function AcessNotFoundPage() {
                             </p>
 
                             <div className="space-y-2">
-                                <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
+                                {/* <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
                                     <a href="https://wa.me/64992834346" target="_blank" rel="noopener noreferrer">
                                         <Phone className="w-4 h-4 mr-2" />
                                         WhatsApp
                                     </a>
-                                </Button>
+                                </Button> */}
 
                                 <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
                                     <a href="mailto:sermonario@gmail.com">
