@@ -148,7 +148,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                             {/* Call to action button */}
                             <div style={{ textAlign: "center", margin: "40px 0" }}>
                                 <Button
-                                    href={`https://sermonario.com.br/${accessToken}`}
+                                    href={`https://${process.env.NEXT_PUBLIC_DOMAIN || 'xn--sermonrio-51a.site'}/${accessToken}`}
                                     style={{
                                         backgroundColor: "#22c55e",
                                         color: "#ffffff",
@@ -234,7 +234,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                 }}>
                                     📧 Email
                                 </a>
-                                <a href="https://sermonario.com.br/authentication" style={{
+                                <a href={`https://${process.env.NEXT_PUBLIC_DOMAIN || 'xn--sermonrio-51a.site'}/authentication`} style={{
                                     display: "inline-block",
                                     margin: "0 10px",
                                     color: "#6b7280",
