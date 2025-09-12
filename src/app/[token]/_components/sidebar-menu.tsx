@@ -106,195 +106,255 @@ export default function SidebarMenu({ sermonData, onImport, onClear }: SidebarMe
 
     const handleExportPDF = () => {
         const doc = new jsPDF()
+        const pageWidth = doc.internal.pageSize.width
+        const pageHeight = doc.internal.pageSize.height
+        let yPosition = 30
 
-        // Configurações do PDF
-        doc.setFontSize(20)
-        doc.text('ESTRUTURA DO SERMÃO', 20, 20)
+        // Função auxiliar para formatar data para dd/mm/aaaa
+        const formatDate = (dateString: string) => {
+            try {
+                // Se a data já está no formato dd/mm/aaaa, retorna como está
+                if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+                    return dateString
+                }
 
-        let yPosition = 40
+                // Para datas no formato ISO (YYYY-MM-DD) ou outras, cria a data localmente
+                let date: Date
 
-        // Informações básicas
-        if (sermonData.title) {
+                if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                    // Para formato YYYY-MM-DD, cria a data localmente para evitar problemas de fuso horário
+                    const [year, month, day] = dateString.split('-').map(Number)
+                    date = new Date(year, month - 1, day) // month - 1 porque Date usa 0-11 para meses
+                } else {
+                    // Para outros formatos, usa o construtor padrão
+                    date = new Date(dateString)
+                }
+
+                if (isNaN(date.getTime())) {
+                    return dateString // Retorna a string original se não for uma data válida
+                }
+
+                const day = date.getDate().toString().padStart(2, '0')
+                const month = (date.getMonth() + 1).toString().padStart(2, '0')
+                const year = date.getFullYear()
+                return `${day}/${month}/${year}`
+            } catch {
+                return dateString // Retorna a string original em caso de erro
+            }
+        }
+
+        // Função auxiliar para adicionar seção
+        const addSection = (title: string, y: number) => {
             doc.setFontSize(16)
-            doc.text(`Título: ${sermonData.title}`, 20, yPosition)
-            yPosition += 10
+            doc.setTextColor(43, 128, 255)
+            doc.setFont(undefined, 'bold')
+            doc.text(title, 20, y)
+            doc.setFont(undefined, 'normal')
+            return y + 15
         }
 
-        if (sermonData.date) {
+        // Função auxiliar para adicionar subseção
+        const addSubsection = (title: string, content: string, y: number) => {
+            if (!content || content.trim() === '') return y
+
             doc.setFontSize(12)
-            doc.text(`Data: ${sermonData.date}`, 20, yPosition)
-            yPosition += 10
-        }
+            doc.setTextColor(0, 0, 0)
+            doc.setFont(undefined, 'bold')
+            doc.text(title, 20, y)
+            y += 8
 
-        if (sermonData.theme) {
-            doc.setFontSize(12)
-            doc.text(`Tema: ${sermonData.theme}`, 20, yPosition)
-            yPosition += 10
-        }
-
-        if (sermonData.mainVerse) {
-            doc.setFontSize(12)
-            doc.text(`Versículo: ${sermonData.mainVerse}`, 20, yPosition)
-            yPosition += 10
-        }
-
-        if (sermonData.verseText) {
             doc.setFontSize(10)
-            const verseText = doc.splitTextToSize(sermonData.verseText, 170)
-            doc.text(verseText, 20, yPosition)
-            yPosition += verseText.length * 5 + 10
+            doc.setTextColor(50, 50, 50)
+            doc.setFont(undefined, 'normal')
+            const lines = doc.splitTextToSize(content, 170)
+            doc.text(lines, 20, y)
+            y += lines.length * 5 + 10
+
+            return y
         }
 
-        if (sermonData.objective) {
-            doc.setFontSize(12)
-            doc.text('Objetivo:', 20, yPosition)
-            yPosition += 10
-            doc.setFontSize(10)
-            const objective = doc.splitTextToSize(sermonData.objective, 170)
-            doc.text(objective, 20, yPosition)
-            yPosition += objective.length * 5 + 15
+        // Função auxiliar para verificar se precisa de nova página
+        const checkNewPage = (y: number, neededSpace: number = 30) => {
+            if (y + neededSpace > pageHeight - 20) {
+                doc.addPage()
+                return 30
+            }
+            return y
+        }
+
+        // Cabeçalho principal
+        doc.setFillColor(43, 128, 255)
+        doc.rect(0, 0, pageWidth, 25, 'F')
+
+        doc.setFontSize(20)
+        doc.setTextColor(255, 255, 255)
+        doc.setFont(undefined, 'bold')
+        const headerTitle = sermonData.title ? `SERMÃO: ${sermonData.title.toUpperCase()}` : 'SERMÃO ESTRUTURADO'
+        doc.text(headerTitle, pageWidth / 2, 18, { align: 'center' })
+
+        yPosition = 40
+
+        // Informações básicas do sermão
+        if (sermonData.title || sermonData.date || sermonData.theme || sermonData.mainVerse || sermonData.verseText || sermonData.objective) {
+            yPosition = addSection('INFORMAÇÕES BÁSICAS', yPosition)
+            yPosition = checkNewPage(yPosition, 50)
+
+            if (sermonData.title) {
+                yPosition = addSubsection('• Título:', sermonData.title, yPosition)
+            }
+
+            if (sermonData.date) {
+                yPosition = addSubsection('• Data:', formatDate(sermonData.date), yPosition)
+            }
+
+            if (sermonData.theme) {
+                yPosition = addSubsection('• Tema:', sermonData.theme, yPosition)
+            }
+
+            if (sermonData.mainVerse) {
+                yPosition = addSubsection('• Versículo Principal:', sermonData.mainVerse, yPosition)
+            }
+
+            if (sermonData.verseText) {
+                yPosition = addSubsection('• Texto do Versículo:', sermonData.verseText, yPosition)
+            }
+
+            if (sermonData.objective) {
+                yPosition = addSubsection('• Objetivo:', sermonData.objective, yPosition)
+            }
+
         }
 
         // Introdução
         if (sermonData.introduction.greeting || sermonData.introduction.context || sermonData.introduction.hook) {
-            doc.setFontSize(14)
-            doc.text('INTRODUÇÃO', 20, yPosition)
-            yPosition += 10
+            yPosition = checkNewPage(yPosition, 40)
+            yPosition = addSection('INTRODUÇÃO', yPosition)
 
             if (sermonData.introduction.greeting) {
-                doc.setFontSize(12)
-                doc.text('Abertura/Cumprimento:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const greeting = doc.splitTextToSize(sermonData.introduction.greeting, 170)
-                doc.text(greeting, 20, yPosition)
-                yPosition += greeting.length * 5 + 10
+                yPosition = addSubsection('• Abertura/Cumprimento:', sermonData.introduction.greeting, yPosition)
             }
 
             if (sermonData.introduction.context) {
-                doc.setFontSize(12)
-                doc.text('Contexto/Situação:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const context = doc.splitTextToSize(sermonData.introduction.context, 170)
-                doc.text(context, 20, yPosition)
-                yPosition += context.length * 5 + 10
+                yPosition = addSubsection('• Contexto/Situação:', sermonData.introduction.context, yPosition)
             }
 
             if (sermonData.introduction.hook) {
-                doc.setFontSize(12)
-                doc.text('Gancho/Chamada de Atenção:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const hook = doc.splitTextToSize(sermonData.introduction.hook, 170)
-                doc.text(hook, 20, yPosition)
-                yPosition += hook.length * 5 + 15
+                yPosition = addSubsection('• Gancho/Chamada de Atenção:', sermonData.introduction.hook, yPosition)
             }
+
+        }
+
+        // Exposição Bíblica
+        if (sermonData.exposition.historicalContext || sermonData.exposition.culturalContext ||
+            sermonData.exposition.textAnalysis || sermonData.exposition.supportVerses) {
+            yPosition = checkNewPage(yPosition, 40)
+            yPosition = addSection('EXPOSIÇÃO BÍBLICA', yPosition)
+
+            if (sermonData.exposition.historicalContext) {
+                yPosition = addSubsection('• Contexto Histórico:', sermonData.exposition.historicalContext, yPosition)
+            }
+
+            if (sermonData.exposition.culturalContext) {
+                yPosition = addSubsection('• Contexto Cultural:', sermonData.exposition.culturalContext, yPosition)
+            }
+
+            if (sermonData.exposition.textAnalysis) {
+                yPosition = addSubsection('• Análise do Texto:', sermonData.exposition.textAnalysis, yPosition)
+            }
+
+            if (sermonData.exposition.supportVerses) {
+                yPosition = addSubsection('• Versículos de Apoio:', sermonData.exposition.supportVerses, yPosition)
+            }
+
         }
 
         // Pontos principais
         if (sermonData.mainPoints.some(point => point.trim())) {
-            doc.setFontSize(14)
-            doc.text('PONTOS PRINCIPAIS', 20, yPosition)
-            yPosition += 10
+            yPosition = checkNewPage(yPosition, 40)
+            yPosition = addSection('PONTOS PRINCIPAIS', yPosition)
 
             sermonData.mainPoints.forEach((point, index) => {
                 if (point.trim()) {
-                    doc.setFontSize(12)
-                    doc.text(`Ponto ${index + 1}:`, 20, yPosition)
-                    yPosition += 10
-                    doc.setFontSize(10)
-                    const pointText = doc.splitTextToSize(point, 170)
-                    doc.text(pointText, 20, yPosition)
-                    yPosition += pointText.length * 5 + 10
+                    yPosition = addSubsection(`• Ponto ${index + 1}:`, point, yPosition)
                 }
             })
-            yPosition += 5
+
         }
 
         // Aplicação prática
         if (sermonData.application.personal || sermonData.application.family ||
             sermonData.application.church || sermonData.application.society) {
-            doc.setFontSize(14)
-            doc.text('APLICAÇÃO PRÁTICA', 20, yPosition)
-            yPosition += 10
+            yPosition = checkNewPage(yPosition, 40)
+            yPosition = addSection('APLICAÇÃO PRÁTICA', yPosition)
 
             if (sermonData.application.personal) {
-                doc.setFontSize(12)
-                doc.text('Vida Pessoal:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const personal = doc.splitTextToSize(sermonData.application.personal, 170)
-                doc.text(personal, 20, yPosition)
-                yPosition += personal.length * 5 + 10
+                yPosition = addSubsection('• Vida Pessoal:', sermonData.application.personal, yPosition)
             }
 
             if (sermonData.application.family) {
-                doc.setFontSize(12)
-                doc.text('Família:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const family = doc.splitTextToSize(sermonData.application.family, 170)
-                doc.text(family, 20, yPosition)
-                yPosition += family.length * 5 + 10
+                yPosition = addSubsection('• Família:', sermonData.application.family, yPosition)
             }
 
             if (sermonData.application.church) {
-                doc.setFontSize(12)
-                doc.text('Igreja:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const church = doc.splitTextToSize(sermonData.application.church, 170)
-                doc.text(church, 20, yPosition)
-                yPosition += church.length * 5 + 10
+                yPosition = addSubsection('• Igreja:', sermonData.application.church, yPosition)
             }
 
             if (sermonData.application.society) {
-                doc.setFontSize(12)
-                doc.text('Sociedade:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const society = doc.splitTextToSize(sermonData.application.society, 170)
-                doc.text(society, 20, yPosition)
-                yPosition += society.length * 5 + 15
+                yPosition = addSubsection('• Sociedade:', sermonData.application.society, yPosition)
             }
+
         }
 
         // Conclusão
         if (sermonData.conclusion.summary || sermonData.conclusion.callToAction || sermonData.conclusion.finalPrayer) {
-            doc.setFontSize(14)
-            doc.text('CONCLUSÃO', 20, yPosition)
-            yPosition += 10
+            yPosition = checkNewPage(yPosition, 40)
+            yPosition = addSection('CONCLUSÃO', yPosition)
 
             if (sermonData.conclusion.summary) {
-                doc.setFontSize(12)
-                doc.text('Resumo dos Pontos:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const summary = doc.splitTextToSize(sermonData.conclusion.summary, 170)
-                doc.text(summary, 20, yPosition)
-                yPosition += summary.length * 5 + 10
+                yPosition = addSubsection('• Resumo dos Pontos:', sermonData.conclusion.summary, yPosition)
             }
 
             if (sermonData.conclusion.callToAction) {
-                doc.setFontSize(12)
-                doc.text('Chamada à Ação:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const callToAction = doc.splitTextToSize(sermonData.conclusion.callToAction, 170)
-                doc.text(callToAction, 20, yPosition)
-                yPosition += callToAction.length * 5 + 10
+                yPosition = addSubsection('• Chamada à Ação:', sermonData.conclusion.callToAction, yPosition)
             }
 
             if (sermonData.conclusion.finalPrayer) {
-                doc.setFontSize(12)
-                doc.text('Oração Final:', 20, yPosition)
-                yPosition += 10
-                doc.setFontSize(10)
-                const finalPrayer = doc.splitTextToSize(sermonData.conclusion.finalPrayer, 170)
-                doc.text(finalPrayer, 20, yPosition)
-                yPosition += finalPrayer.length * 5 + 10
+                yPosition = addSubsection('• Oração Final:', sermonData.conclusion.finalPrayer, yPosition)
             }
+
+        }
+
+        // Anotações
+        if (sermonData.notes.illustrations || sermonData.notes.statistics ||
+            sermonData.notes.quotes || sermonData.notes.general) {
+            yPosition = checkNewPage(yPosition, 40)
+            yPosition = addSection('ANOTAÇÕES ADICIONAIS', yPosition)
+
+            if (sermonData.notes.illustrations) {
+                yPosition = addSubsection('• Ilustrações:', sermonData.notes.illustrations, yPosition)
+            }
+
+            if (sermonData.notes.statistics) {
+                yPosition = addSubsection('• Estatísticas:', sermonData.notes.statistics, yPosition)
+            }
+
+            if (sermonData.notes.quotes) {
+                yPosition = addSubsection('• Citações:', sermonData.notes.quotes, yPosition)
+            }
+
+            if (sermonData.notes.general) {
+                yPosition = addSubsection('• Observações Gerais:', sermonData.notes.general, yPosition)
+            }
+        }
+
+        // Rodapé
+        const totalPages = doc.internal.getNumberOfPages()
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i)
+            doc.setFontSize(8)
+            doc.setTextColor(150, 150, 150)
+            doc.text(`Pagina ${i} de ${totalPages}`, pageWidth - 30, pageHeight - 10, { align: 'right' })
+            doc.text('Gerado pelo Sermonario', 20, pageHeight - 10)
         }
 
         // Salvar o PDF
@@ -495,43 +555,89 @@ export default function SidebarMenu({ sermonData, onImport, onClear }: SidebarMe
 
             {/* Preview da estrutura */}
             {showPreview && (
-                <div className="fixed top-4 right-4 w-96 max-h-96 bg-white shadow-lg rounded-lg p-4 z-40 overflow-y-auto">
+                <div className="fixed top-4 right-4 w-100 max-h-200 bg-white shadow-lg rounded-lg p-4 z-40 overflow-y-auto">
                     <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-semibold">Estrutura do Sermão</h3>
+                        <h3 className="font-semibold">Prévia do Sermão</h3>
                         <Button
                             variant="ghost"
                             size="sm"
+                            className="text-gray-600 bg-none hover:bg-white hover:text-red-500 hover:scale-105 transition-all duration-300"
                             onClick={() => setShowPreview(false)}
                         >
-                            <X className="h-4 w-4" />
+                            Fechar
                         </Button>
                     </div>
-                    <div className="text-sm space-y-2">
-                        {sermonData.title && <p><strong>Título:</strong> {sermonData.title}</p>}
-                        {sermonData.date && <p><strong>Data:</strong> {sermonData.date}</p>}
-                        {sermonData.theme && <p><strong>Tema:</strong> {sermonData.theme}</p>}
-                        {sermonData.mainVerse && <p><strong>Versículo:</strong> {sermonData.mainVerse}</p>}
-                        {sermonData.objective && <p><strong>Objetivo:</strong> {sermonData.objective.substring(0, 100)}...</p>}
+                    <div className="text-sm space-y-3">
+                        {/* Informações Básicas */}
+                        {sermonData.title && <div><strong>Título:</strong> {sermonData.title}</div>}
+                        {sermonData.date && <div><strong>Data:</strong> {sermonData.date}</div>}
+                        {sermonData.theme && <div><strong>Tema:</strong> {sermonData.theme}</div>}
+                        {sermonData.mainVerse && <div><strong>Versículo:</strong> {sermonData.mainVerse}</div>}
+                        {sermonData.verseText && <div><strong>Texto do Versículo:</strong> {sermonData.verseText}</div>}
+                        {sermonData.objective && <div><strong>Objetivo:</strong> {sermonData.objective}</div>}
 
-                        <div className="mt-4">
-                            <p><strong>Seções Preenchidas:</strong></p>
-                            <ul className="list-disc list-inside space-y-1 text-xs">
-                                {sermonData.introduction.greeting && <li>Introdução - Abertura</li>}
-                                {sermonData.introduction.context && <li>Introdução - Contexto</li>}
-                                {sermonData.introduction.hook && <li>Introdução - Gancho</li>}
-                                {sermonData.exposition.historicalContext && <li>Exposição - Contexto Histórico</li>}
-                                {sermonData.exposition.culturalContext && <li>Exposição - Contexto Cultural</li>}
-                                {sermonData.exposition.textAnalysis && <li>Exposição - Análise de Texto</li>}
-                                {sermonData.mainPoints.some(p => p.trim()) && <li>Pontos Principais ({sermonData.mainPoints.filter(p => p.trim()).length})</li>}
-                                {sermonData.application.personal && <li>Aplicação - Vida Pessoal</li>}
-                                {sermonData.application.family && <li>Aplicação - Família</li>}
-                                {sermonData.application.church && <li>Aplicação - Igreja</li>}
-                                {sermonData.application.society && <li>Aplicação - Sociedade</li>}
-                                {sermonData.conclusion.summary && <li>Conclusão - Resumo</li>}
-                                {sermonData.conclusion.callToAction && <li>Conclusão - Chamada à Ação</li>}
-                                {sermonData.conclusion.finalPrayer && <li>Conclusão - Oração Final</li>}
-                            </ul>
-                        </div>
+                        {/* Introdução */}
+                        {(sermonData.introduction.greeting || sermonData.introduction.context || sermonData.introduction.hook) && (
+                            <div className="mt-3">
+                                <h4 className="font-semibold text-blue-600 mb-2">INTRODUÇÃO</h4>
+                                {sermonData.introduction.greeting && <div className="mb-1"><strong>Abertura:</strong> {sermonData.introduction.greeting}</div>}
+                                {sermonData.introduction.context && <div className="mb-1"><strong>Contexto:</strong> {sermonData.introduction.context}</div>}
+                                {sermonData.introduction.hook && <div className="mb-1"><strong>Gancho:</strong> {sermonData.introduction.hook}</div>}
+                            </div>
+                        )}
+
+                        {/* Exposição Bíblica */}
+                        {(sermonData.exposition.historicalContext || sermonData.exposition.culturalContext || sermonData.exposition.textAnalysis || sermonData.exposition.supportVerses) && (
+                            <div className="mt-3">
+                                <h4 className="font-semibold text-blue-600 mb-2">EXPOSIÇÃO BÍBLICA</h4>
+                                {sermonData.exposition.historicalContext && <div className="mb-1"><strong>Contexto Histórico:</strong> {sermonData.exposition.historicalContext}</div>}
+                                {sermonData.exposition.culturalContext && <div className="mb-1"><strong>Contexto Cultural:</strong> {sermonData.exposition.culturalContext}</div>}
+                                {sermonData.exposition.textAnalysis && <div className="mb-1"><strong>Análise do Texto:</strong> {sermonData.exposition.textAnalysis}</div>}
+                                {sermonData.exposition.supportVerses && <div className="mb-1"><strong>Versículos de Apoio:</strong> {sermonData.exposition.supportVerses}</div>}
+                            </div>
+                        )}
+
+                        {/* Pontos Principais */}
+                        {sermonData.mainPoints.some(point => point.trim()) && (
+                            <div className="mt-3">
+                                <h4 className="font-semibold text-blue-600 mb-2">PONTOS PRINCIPAIS</h4>
+                                {sermonData.mainPoints.map((point, index) => (
+                                    point.trim() && <div key={index} className="mb-1"><strong>Ponto {index + 1}:</strong> {point}</div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Aplicação Prática */}
+                        {(sermonData.application.personal || sermonData.application.family || sermonData.application.church || sermonData.application.society) && (
+                            <div className="mt-3">
+                                <h4 className="font-semibold text-blue-600 mb-2">APLICAÇÃO PRÁTICA</h4>
+                                {sermonData.application.personal && <div className="mb-1"><strong>Vida Pessoal:</strong> {sermonData.application.personal}</div>}
+                                {sermonData.application.family && <div className="mb-1"><strong>Família:</strong> {sermonData.application.family}</div>}
+                                {sermonData.application.church && <div className="mb-1"><strong>Igreja:</strong> {sermonData.application.church}</div>}
+                                {sermonData.application.society && <div className="mb-1"><strong>Sociedade:</strong> {sermonData.application.society}</div>}
+                            </div>
+                        )}
+
+                        {/* Conclusão */}
+                        {(sermonData.conclusion.summary || sermonData.conclusion.callToAction || sermonData.conclusion.finalPrayer) && (
+                            <div className="mt-3">
+                                <h4 className="font-semibold text-blue-600 mb-2">CONCLUSÃO</h4>
+                                {sermonData.conclusion.summary && <div className="mb-1"><strong>Resumo:</strong> {sermonData.conclusion.summary}</div>}
+                                {sermonData.conclusion.callToAction && <div className="mb-1"><strong>Chamada à Ação:</strong> {sermonData.conclusion.callToAction}</div>}
+                                {sermonData.conclusion.finalPrayer && <div className="mb-1"><strong>Oração Final:</strong> {sermonData.conclusion.finalPrayer}</div>}
+                            </div>
+                        )}
+
+                        {/* Anotações */}
+                        {(sermonData.notes.illustrations || sermonData.notes.statistics || sermonData.notes.quotes || sermonData.notes.general) && (
+                            <div className="mt-3">
+                                <h4 className="font-semibold text-blue-600 mb-2">ANOTAÇÕES</h4>
+                                {sermonData.notes.illustrations && <div className="mb-1"><strong>Ilustrações:</strong> {sermonData.notes.illustrations}</div>}
+                                {sermonData.notes.statistics && <div className="mb-1"><strong>Estatísticas:</strong> {sermonData.notes.statistics}</div>}
+                                {sermonData.notes.quotes && <div className="mb-1"><strong>Citações:</strong> {sermonData.notes.quotes}</div>}
+                                {sermonData.notes.general && <div className="mb-1"><strong>Observações:</strong> {sermonData.notes.general}</div>}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
