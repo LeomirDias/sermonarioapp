@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     // Dados do token de acesso
     const tokenData = {
-        id: customer.id,
+        id: customer.id || `customer_${uuidv4()}_${Date.now()}`,
         name: customer.name || "",
         email: customer.email,
         token: accessToken,
