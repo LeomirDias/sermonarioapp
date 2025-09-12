@@ -1,5 +1,7 @@
 "use client";
 
+import { Mail, MessageCircle } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -41,17 +43,17 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 relative">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-            <span className="text-2xl">📚</span>
+          <div className="mx-auto mb-4 w-28 h-28 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full flex items-center justify-center">
+            <Image src="/LogoIcon.png" alt="Sermonário" className="w-16 h-16" width={64} height={64} />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">
             Sermonário
           </CardTitle>
           <CardDescription className="text-gray-600">
-            Digite seu email para acessar seu sermão
+            Digite seu email para acessar seu link de acesso
           </CardDescription>
         </CardHeader>
 
@@ -72,36 +74,44 @@ export default function Home() {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full text-white"
               disabled={isLoading}
             >
-              {isLoading ? "Buscando..." : "Acessar Sermão"}
+              {isLoading ? "Buscando..." : "Acessar link exclusivo"}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center border-t pt-4 border-gray-200">
             <p className="text-sm text-gray-500">
               Não tem acesso? Entre em contato conosco
             </p>
-            <div className="mt-2 space-x-4">
+            <div className="mt-2 flex justify-center gap-6">
               <a
                 href="https://wa.me/64992834346"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:text-blue-800"
+                className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
               >
+                <MessageCircle className="w-4 h-4 mr-2" />
                 WhatsApp
               </a>
               <a
-                href="mailto:suporteigenda@gmail.com"
-                className="text-sm text-blue-600 hover:text-blue-800"
+                href="mailto:sermonario@gmail.com"
+                className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
               >
+                <Mail className="w-4 h-4 mr-2" />
                 Email
               </a>
             </div>
           </div>
+
         </CardContent>
       </Card>
+      <div className="text-center absolute bottom-0 w-full mb-4">
+        <p className="text-xs text-gray-500">
+          © 2025 Sermonário. Todos os direitos reservados.
+        </p>
+      </div>
     </div>
   );
 }
