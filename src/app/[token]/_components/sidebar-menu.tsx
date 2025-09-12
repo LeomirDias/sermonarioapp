@@ -2,21 +2,24 @@
 
 import jsPDF from 'jspdf'
 import {
+    BookOpen,
     Download,
     Eye,
+    FileEdit,
     FileText,
+    Mail,
+    Menu,
+    MonitorPlay,
     Trash2,
     Upload,
     X
 } from "lucide-react"
-import { useState } from "react"
+import Link from 'next/link'
+import { useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 
-import { Textarea } from '../../../components/ui/textarea'
 
 interface SermonData {
     title: string
@@ -65,7 +68,8 @@ interface SidebarMenuProps {
 
 export default function SidebarMenu({ sermonData, onImport, onClear }: SidebarMenuProps) {
     const [showPreview, setShowPreview] = useState(false)
-    const [importData, setImportData] = useState("")
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
@@ -84,16 +88,10 @@ export default function SidebarMenu({ sermonData, onImport, onClear }: SidebarMe
         }
     }
 
-    const handleImportFromText = () => {
-        try {
-            const data = JSON.parse(importData)
-            onImport(data)
-            setImportData("")
-            alert('Sermão importado com sucesso!')
-        } catch {
-            alert('Erro ao importar dados. Verifique se o JSON está válido.')
-        }
+    const handleUploadClick = () => {
+        fileInputRef.current?.click()
     }
+
 
     const handleExportJSON = () => {
         const dataStr = JSON.stringify(sermonData, null, 2)
@@ -303,140 +301,196 @@ export default function SidebarMenu({ sermonData, onImport, onClear }: SidebarMe
         doc.save(`sermao-${sermonData.title || 'sem-titulo'}.pdf`)
     }
 
+    const MenuContent = () => (
+        <>
+            <div className="space-y-3">
+                {/* Importar JSON */}
+                <Card className="border-transparent shadow-md hover:border-primary hover:bg-blue-50 hover:scale-105 transition-all duration-300">
+                    <CardHeader className="flex items-center justify-center">
+                        <CardTitle className="text-md flex flex-col text-primary items-center gap-2">
+                            <div className="bg-primary rounded-full p-2">
+                                <FileEdit className="h-5 w-5 text-white" />
+                            </div>
+                            Editar um Sermão
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".json"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                        />
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full flex items-center bg-primary text-white gap-2 shadow-md hover:border-primary/50 hover:shadow-xl hover:bg-blue-50 hover:text-primary"
+                            onClick={handleUploadClick}
+                        >
+                            <Upload className="h-4 w-4" />
+                            Escolher Arquivo
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Exportar JSON */}
+                <Card className="border-transparent shadow-md hover:border-primary hover:bg-blue-50 hover:scale-105 transition-all duration-300">
+                    <CardHeader className="flex items-center justify-center">
+                        <CardTitle className="text-md flex flex-col text-primary items-center gap-2">
+                            <div className="bg-primary rounded-full p-2">
+                                <Download className="h-5 w-5 text-white" />
+                            </div>
+                            Salvar sermão editável
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full flex items-center bg-primary text-white gap-2 shadow-md hover:border-primary/50 hover:shadow-xl hover:bg-blue-50 hover:text-primary"
+                            onClick={handleExportJSON}
+                        >
+                            Baixar JSON
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Visualizar Estrutura */}
+                <Card className="border-transparent shadow-md hover:border-primary hover:bg-blue-50 hover:scale-105 transition-all duration-300">
+                    <CardHeader className="flex items-center justify-center">
+                        <CardTitle className="text-md flex flex-col text-primary items-center gap-2">
+                            <div className="bg-primary rounded-full p-2">
+                                <Eye className="h-5 w-5 text-white" />
+                            </div>
+                            Visualizar prévia do sermão
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full flex items-center bg-primary text-white gap-2 shadow-md hover:border-primary/50 hover:shadow-xl hover:bg-blue-50 hover:text-primary"
+                            onClick={() => setShowPreview(!showPreview)}
+                        >
+                            {showPreview ? 'Ocultar' : 'Mostrar'} Estrutura
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Exportar PDF */}
+                <Card className="border-transparent shadow-md hover:border-primary hover:bg-blue-50 hover:scale-105 transition-all duration-300">
+                    <CardHeader className="flex items-center justify-center">
+                        <CardTitle className="text-md flex flex-col text-primary items-center gap-2">
+                            <div className="bg-primary rounded-full p-2">
+                                <FileText className="h-5 w-5 text-white" />
+                            </div>
+                            Salvar sermão em PDF
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full flex items-center bg-primary text-white gap-2 shadow-md hover:border-primary/50 hover:shadow-xl hover:bg-blue-50 hover:text-primary"
+                            onClick={handleExportPDF}
+                        >
+                            Gerar PDF
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Limpar Dados */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full flex items-center gap-2 shadow-md hover:border-red-500 hover:shadow-xl hover:bg-red-50 hover:text-red-600 hover:scale-105 transition-all duration-300"
+                    onClick={() => {
+                        if (confirm('Tem certeza que deseja limpar todos os dados?')) {
+                            onClear()
+                        }
+                    }}
+                >
+                    <Trash2 className="h-4 w-4" />
+                    Limpar Tudo
+                </Button>
+
+                <div className="flex items-center justify-center gap-2 w-full mt-4 border-t-1 border-gray-200 pt-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-1/2 flex items-center gap-2 shadow-md hover:border-primary hover:shadow-xl hover:bg-blue-50 hover:text-primary hover:scale-105 transition-all duration-300"
+                    >
+                        <Link href="/store" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                            <BookOpen className="h-4 w-4" />
+                            Loja de Sermões
+                        </Link>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-1/2 flex items-center gap-2 shadow-md hover:border-primary hover:shadow-xl hover:bg-blue-50 hover:text-primary hover:scale-105 transition-all duration-300"
+                    >
+                        <Link href="/tutorial" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                            <MonitorPlay className="h-4 w-4" />
+                            Tutorial
+                        </Link>
+                    </Button>
+                </div>
+            </div>
+        </>
+    )
+
     return (
         <>
-            {/* Menu lateral fixo */}
-            <div className="fixed left-0 top-0 h-full w-80 bg-white shadow-lg z-40 overflow-y-auto">
-                <div className="p-4">
-                    <h2 className="text-lg font-semibold mb-4">Menu do Sermão</h2>
+            {/* Trigger button para mobile - canto superior direito */}
+            <Button
+                variant="default"
+                size="sm"
+                className="fixed bottom-4 right-3 z-50 h-10 w-10 rounded-full md:hidden bg-primary shadow-sm border-transparent text-white"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+                <Menu className="h-8 w-8" />
+            </Button>
 
-                    <div className="space-y-3">
-                        {/* Importar JSON */}
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm flex items-center gap-2">
-                                    <Upload className="h-4 w-4" />
-                                    Importar Sermão
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-2">
-                                <Input
-                                    type="file"
-                                    accept=".json"
-                                    onChange={handleFileUpload}
-                                    className="text-xs"
-                                />
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline" size="sm" className="w-full">
-                                            Importar do Texto
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                            <DialogTitle>Importar JSON do Texto</DialogTitle>
-                                        </DialogHeader>
-                                        <div className="space-y-4">
-                                            <Textarea
-                                                placeholder="Cole o JSON do sermão aqui..."
-                                                value={importData}
-                                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setImportData(e.target.value)}
-                                                rows={10}
-                                            />
-                                            <Button onClick={handleImportFromText} className="w-full">
-                                                Importar
-                                            </Button>
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
-                            </CardContent>
-                        </Card>
-
-                        {/* Exportar JSON */}
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm flex items-center gap-2">
-                                    <Download className="h-4 w-4" />
-                                    Exportar JSON
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full"
-                                    onClick={handleExportJSON}
-                                >
-                                    Baixar JSON
-                                </Button>
-                            </CardContent>
-                        </Card>
-
-                        {/* Visualizar Estrutura */}
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm flex items-center gap-2">
-                                    <Eye className="h-4 w-4" />
-                                    Visualizar Estrutura
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full"
-                                    onClick={() => setShowPreview(!showPreview)}
-                                >
-                                    {showPreview ? 'Ocultar' : 'Mostrar'} Estrutura
-                                </Button>
-                            </CardContent>
-                        </Card>
-
-                        {/* Exportar PDF */}
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm flex items-center gap-2">
-                                    <FileText className="h-4 w-4" />
-                                    Exportar PDF
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full"
-                                    onClick={handleExportPDF}
-                                >
-                                    Gerar PDF
-                                </Button>
-                            </CardContent>
-                        </Card>
-
-                        {/* Limpar Dados */}
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm flex items-center gap-2 text-red-600">
-                                    <Trash2 className="h-4 w-4" />
-                                    Limpar Dados
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full text-red-600 hover:bg-red-50"
-                                    onClick={() => {
-                                        if (confirm('Tem certeza que deseja limpar todos os dados?')) {
-                                            onClear()
-                                        }
-                                    }}
-                                >
-                                    Limpar Tudo
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </div>
+            {/* Overlay para mobile */}
+            {isMobileMenuOpen && (
+                <div
+                    className="fixed inset-0 bg-gray-50 bg-opacity-50 z-40 md:hidden"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                >
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="fixed bottom-4 left-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-primary hover:text-white z-50"
+                    >
+                        <a href="mailto:sermonario@gmail.com" className="flex items-center gap-2 px-4 py-2">
+                            <Mail className="w-8 h-8" />
+                        </a>
+                    </Button>
                 </div>
+            )}
+
+            {/* Menu lateral - Desktop (sempre visível) */}
+            <div className="hidden md:block fixed left-0 top-0 h-full w-100 bg-none z-40 overflow-y-auto p-4">
+                <MenuContent />
+            </div>
+
+            {/* Menu lateral - Mobile (colapsável) */}
+            <div className={`fixed right-0 top-0 h-full w-80 bg-gray-50 border-l-1 border-gray-200 shadow-xl z-50 overflow-y-auto p-4 transform transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                }`}>
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-semibold text-gray-800">Menu</h2>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        <X className="h-5 w-5" />
+                    </Button>
+                </div>
+                <MenuContent />
             </div>
 
             {/* Preview da estrutura */}

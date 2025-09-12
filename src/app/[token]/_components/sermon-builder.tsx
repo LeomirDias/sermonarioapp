@@ -1,6 +1,7 @@
 "use client"
 
-import { ChevronDown, ChevronUp, Loader2, Plus, Sparkles } from "lucide-react"
+import { ChevronDown, ChevronUp, Loader2, Mail, Plus, Sparkles } from "lucide-react"
+import Image from "next/image"
 import { useState } from "react"
 
 import SidebarMenu from "@/app/[token]/_components/sidebar-menu"
@@ -11,7 +12,12 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useSermonStorage } from "@/hooks/useSermonStorage"
 
-export default function SermonBuilder() {
+interface SermonBuilderProps {
+    user: string
+    email: string
+}
+
+export default function SermonBuilder({ user, email }: SermonBuilderProps) {
     const { sermonData, updateSermonData, clearSermonData, importSermonData } = useSermonStorage()
 
     const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
@@ -158,7 +164,7 @@ export default function SermonBuilder() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-gray-50 py-4 relative">
             <SidebarMenu
                 sermonData={sermonData}
                 onImport={importSermonData}
@@ -166,10 +172,12 @@ export default function SermonBuilder() {
                 onExport={handleExport}
             />
 
-            <div className="max-w-4xl mx-auto px-4 ml-80">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Estruturador de Sermões</h1>
-                    <p className="text-gray-600">Crie e estruture seus sermões de forma organizada e eficiente</p>
+            <div className="max-w-5xl mx-auto px-4 relative md:ml-100">
+                <div className="p-4">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Olá, {user}!</h1>
+                    <p className="text-gray-600 text-sm">Seja bem vindo ao seu Sermonário.</p>
+
+                    <Image src="/LogoIcon.png" alt="Sermonário" className="w-32 h-32 absolute top-0 right-6" width={128} height={128} />
                 </div>
 
                 {/* Seção de inputs superiores */}
@@ -665,6 +673,19 @@ export default function SermonBuilder() {
                     </Collapsible>
                 </Card>
             </div>
+            <p className="text-xs text-gray-400 absolute sm:fixed bottom-2 left-2">Email de acesso vitalício: {email}</p>
+            <p className="text-xs text-gray-400 absolute bottom-0 w-full text-center my-2 hidden md:block">© 2025 Sermonário. Todos os direitos reservados. Desenvolvido por <a href="#" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">Synqia</a></p>
+            <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="fixed hidden md:block bottom-4 right-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-primary hover:text-white z-50"
+            >
+                <a href="mailto:sermonario@gmail.com" className="flex items-center gap-2 px-4 py-2">
+                    <Mail className="w-8 h-8" />
+                    <span className="hidden sm:inline">Precisa de ajuda?</span>
+                </a>
+            </Button>
         </div>
     )
 }

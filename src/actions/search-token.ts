@@ -75,3 +75,30 @@ export async function searchTokenByToken(token: string) {
         };
     }
 }
+
+export async function searchUserByToken(token: string) {
+    try {
+        const user = await db.query.accessTokensTable.findFirst({
+            where: eq(accessTokensTable.token, token),
+        });
+
+        if (!user) {
+            return {
+                success: false,
+                message: "Usuário não encontrado",
+            };
+        }
+
+        return {
+            success: true,
+            user: user.name,
+            email: user.email,
+        };
+    } catch (error) {
+        console.error("Erro ao buscar usuário:", error);
+        return {
+            success: false,
+            message: "Erro interno do servidor. Tente novamente.",
+        };
+    }
+}
