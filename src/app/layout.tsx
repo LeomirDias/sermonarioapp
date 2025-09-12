@@ -14,7 +14,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Sermonário",
+  title: "Sermonário App",
 };
 
 export default function RootLayout({

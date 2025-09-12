@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MessageCircle } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -50,7 +50,7 @@ export default function Home() {
             <Image src="/LogoIcon.png" alt="Sermonário" className="w-16 h-16" width={64} height={64} />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">
-            Sermonário
+            Sermonário App
           </CardTitle>
           <CardDescription className="text-gray-600">
             Digite seu email para acessar seu link de acesso
@@ -81,27 +81,25 @@ export default function Home() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center border-t pt-4 border-gray-200">
-            <p className="text-sm text-gray-500">
-              Não tem acesso? Entre em contato conosco
+          <div className="text-center mt-4 border-t pt-4 border-gray-200">
+            <p className="text-sm text-gray-600 mb-3">
+              Precisa de ajuda? Entre em contato:
             </p>
-            <div className="mt-2 flex justify-center gap-6">
-              <a
-                href="https://wa.me/64992834346"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                WhatsApp
-              </a>
-              <a
-                href="mailto:sermonario@gmail.com"
-                className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Email
-              </a>
+
+            <div className="space-y-2">
+              <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
+                <a href="https://wa.me/64992834346" target="_blank" rel="noopener noreferrer">
+                  <Phone className="w-4 h-4 mr-2" />
+                  WhatsApp
+                </a>
+              </Button>
+
+              <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
+                <a href="mailto:sermonario@gmail.com">
+                  <Mail className="w-4 h-4 mr-2" />
+                  Email
+                </a>
+              </Button>
             </div>
           </div>
 
@@ -109,7 +107,7 @@ export default function Home() {
       </Card>
       <div className="text-center absolute bottom-0 w-full mb-4">
         <p className="text-xs text-gray-500">
-          © 2025 Sermonário. Todos os direitos reservados.
+          © 2025 Sermonário. Todos os direitos reservados. Desenvolvido por <a href="#" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">Synqia</a>
         </p>
       </div>
     </div>

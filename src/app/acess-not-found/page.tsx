@@ -1,29 +1,26 @@
-import { AlertCircle, Home, Mail, Phone } from "lucide-react";
+import { Mail, Phone, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AcessNotFoundPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 relative">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                        <AlertCircle className="w-8 h-8 text-red-600" />
+                    <div className="mx-auto mb-4 w-28 h-28 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full flex items-center justify-center">
+                        <ShieldAlert className="w-16 h-16 text-primary" />
                     </div>
                     <CardTitle className="text-2xl font-bold text-gray-900">
                         Acesso Negado
                     </CardTitle>
-                    <CardDescription className="text-gray-600">
-                        Token de acesso não encontrado ou inválido
-                    </CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-6">
                     <div className="text-center space-y-4">
                         <p className="text-gray-700">
-                            O token de acesso vitalício fornecido não foi encontrado em nosso sistema ou não está ativo.
+                            O token de acesso vitalício fornecido no link não foi encontrado em nosso sistema ou não está ativo.
                         </p>
 
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -36,30 +33,33 @@ export default function AcessNotFoundPage() {
                                 <li>• Erro de sistema</li>
                             </ul>
                         </div>
+
+                        <p className="text-gray-700">
+                            Clique no botão abaixo para buscar seu token de acesso.
+                        </p>
                     </div>
 
                     <div className="space-y-3">
-                        <Button asChild className="w-full">
+                        <Button asChild className="w-full text-white">
                             <Link href="/">
-                                <Home className="w-4 h-4 mr-2" />
-                                Voltar ao início e tentar novamente
+                                Buscar meu token de acesso
                             </Link>
                         </Button>
 
-                        <div className="text-center">
+                        <div className="text-center mt-4 border-t pt-4 border-gray-200">
                             <p className="text-sm text-gray-600 mb-3">
                                 Precisa de ajuda? Entre em contato:
                             </p>
 
                             <div className="space-y-2">
-                                <Button variant="outline" size="sm" asChild className="w-full">
+                                <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
                                     <a href="https://wa.me/64992834346" target="_blank" rel="noopener noreferrer">
                                         <Phone className="w-4 h-4 mr-2" />
                                         WhatsApp
                                     </a>
                                 </Button>
 
-                                <Button variant="outline" size="sm" asChild className="w-full">
+                                <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
                                     <a href="mailto:sermonario@gmail.com">
                                         <Mail className="w-4 h-4 mr-2" />
                                         Email
@@ -69,13 +69,13 @@ export default function AcessNotFoundPage() {
                         </div>
                     </div>
 
-                    <div className="text-center pt-4 border-t">
-                        <p className="text-xs text-gray-500">
-                            © 2025 Sermonário. Todos os direitos reservados.
-                        </p>
-                    </div>
                 </CardContent>
             </Card>
+            <div className="text-center absolute bottom-0 w-full mb-4">
+                <p className="text-xs text-gray-500">
+                    © 2025 Sermonário. Todos os direitos reservados. Desenvolvido por <a href="#" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">Synqia</a>
+                </p>
+            </div>
         </div>
     );
 }
