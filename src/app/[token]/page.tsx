@@ -4,9 +4,9 @@ import { searchTokenByToken } from "@/actions/search-token";
 import SermonBuilder from "@/app/[token]/_components/sermon-builder";
 
 interface PageProps {
-    params: {
+    params: Promise<{
         token: string;
-    };
+    }>;
 }
 
 export default async function Home({ params }: PageProps) {
