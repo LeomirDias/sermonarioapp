@@ -222,27 +222,27 @@ export default function MarketplaceClient({ token }: MarketplaceClientProps) {
                                             variant="outline"
                                             onClick={() => handleDownload(sermon.id, "pdf")}
                                             disabled={downloading === `${sermon.id}-pdf`}
-                                            className="flex-1"
+                                            className="flex-1 hover:bg-primary hover:text-white"
                                         >
                                             <FileText className="w-4 h-4 mr-2" />
-                                            {downloading === `${sermon.id}-pdf` ? "Baixando..." : "PDF"}
+                                            {downloading === `${sermon.id}-pdf` ? "Baixando..." : "PDF pronto"}
                                         </Button>
                                         <Button
                                             size="sm"
                                             variant="outline"
                                             onClick={() => handleDownload(sermon.id, "json")}
                                             disabled={downloading === `${sermon.id}-json`}
-                                            className="flex-1"
+                                            className="flex-1 hover:bg-primary hover:text-white"
                                         >
                                             <FileJson className="w-4 h-4 mr-2" />
-                                            {downloading === `${sermon.id}-json` ? "Baixando..." : "JSON"}
+                                            {downloading === `${sermon.id}-json` ? "Baixando..." : "JSON editável"}
                                         </Button>
                                     </div>
                                 ) : (
                                     <Button
                                         size="sm"
                                         onClick={() => handlePurchase(sermon)}
-                                        className="w-full"
+                                        className="w-full hover:bg-primary hover:text-white"
                                     >
                                         <ShoppingCart className="w-4 h-4 mr-2" />
                                         Comprar por {formatPrice(sermon.price_in_cents)}
