@@ -494,7 +494,7 @@ export default function SidebarMenu({ sermonData, onImport, onClear }: SidebarMe
                         size="sm"
                         className="w-1/2 flex items-center gap-2 shadow-md hover:border-primary hover:shadow-xl hover:bg-blue-50 hover:text-primary hover:scale-105 transition-all duration-300"
                     >
-                        <Link href="/tutorial" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                        <Link href="/tutorials" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                             <MonitorPlay className="h-4 w-4" />
                             Tutorial
                         </Link>
