@@ -36,7 +36,7 @@ export default function RootLayout({
           </ThemeProvider>
           <SpeedInsights />
         </NuqsAdapter>
-        <Toaster position="bottom-center" richColors theme="system" />
+        <Toaster position="bottom-center" richColors theme="light" />
       </body>
     </html>
   );

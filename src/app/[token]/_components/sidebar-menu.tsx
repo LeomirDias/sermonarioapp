@@ -15,6 +15,7 @@ import {
     X
 } from "lucide-react"
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -70,6 +71,8 @@ export default function SidebarMenu({ sermonData, onImport, onClear }: SidebarMe
     const [showPreview, setShowPreview] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const params = useParams()
+    const token = params.token as string
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
@@ -481,7 +484,7 @@ export default function SidebarMenu({ sermonData, onImport, onClear }: SidebarMe
                         size="sm"
                         className="w-1/2 flex items-center gap-2 shadow-md hover:border-primary hover:shadow-xl hover:bg-blue-50 hover:text-primary hover:scale-105 transition-all duration-300"
                     >
-                        <Link href="/store" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                        <Link href={`/${token}/marketplace`} className="flex items-center justify-center gap-2">
                             <BookOpen className="h-4 w-4" />
                             Loja de Sermões
                         </Link>
