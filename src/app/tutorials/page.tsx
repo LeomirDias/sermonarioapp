@@ -15,7 +15,7 @@ import { mockTutorialVideos, TutorialVideoGallery } from "./_components";
 
 
 export const metadata: Metadata = {
-  title: "iGenda - Tutoriais",
+  title: "Sermonário - Tutoriais",
 };
 
 const TutorialsPage = async () => {
@@ -26,7 +26,7 @@ const TutorialsPage = async () => {
         <PageHeaderContent>
           <PageTitle>Tutoriais</PageTitle>
           <PageDescription>
-            Tire suas dúvidas e aprenda mais sobre o Sermoário! Assista aos vídeos tutoriais para dominar todas as funcionalidades da plataforma.
+            Tire suas dúvidas e aprenda mais sobre o Sermonário! Assista aos vídeos tutoriais para dominar todas as funcionalidades da plataforma.
           </PageDescription>
         </PageHeaderContent>
         <PageActions>
