@@ -12,8 +12,6 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-import { sendWhatsappMessage } from "@/lib/zapi-service";
-
 interface NewSubscriptionEmailProps {
     customerName: string;
     accessToken: string;
@@ -22,7 +20,6 @@ interface NewSubscriptionEmailProps {
 const NewSubscriptionEmail = async (props: NewSubscriptionEmailProps) => {
     const { customerName, accessToken } = props;
 
-    const alertPhone = "64992214800"
 
     return (
         <Html lang="pt-BR">
@@ -218,14 +215,6 @@ const NewSubscriptionEmail = async (props: NewSubscriptionEmailProps) => {
         </Html>
     );
 
-    // Mensagem WhatsApp para usuários existentes
-    await sendWhatsappMessage(alertPhone,
-        `Olá, Leomir! 👋
-
-Mais uma venda realizada no Sermonário. 🤑🎉
-
- `
-    );
 }
 
 

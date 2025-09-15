@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import NewSubscriptionEmail from "@/components/emails/new-sale";
 import { db } from "@/db";
 import { accessTokensTable } from "@/db/schema";
+import { sendWhatsappMessage } from "@/lib/zapi-service";
 
 const CAKTO_WEBHOOK_SECRET = process.env.CAKTO_WEBHOOK_SECRET_SALES!;
 const resend = new Resend(process.env.RESEND_API_KEY as string);
@@ -13,6 +14,8 @@ const resend = new Resend(process.env.RESEND_API_KEY as string);
 function generateAccessToken(): string {
     return `serm_${uuidv4()}_${Date.now()}`;
 }
+
+const alertPhone = "64992214800"
 
 export async function POST(req: NextRequest) {
     const body = await req.json();
@@ -53,6 +56,14 @@ export async function POST(req: NextRequest) {
         }),
     });
 
+    // Mensagem WhatsApp para usuários existentes
+    await sendWhatsappMessage(alertPhone,
+        `Olá, Leomir! 👋
+
+Mais uma venda realizada no Sermonário. 🤑🎉
+
+ `
+    );
 
     return NextResponse.json({ received: true });
 }
