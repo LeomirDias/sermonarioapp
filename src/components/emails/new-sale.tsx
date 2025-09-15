@@ -12,13 +12,17 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
+import { sendWhatsappMessage } from "@/lib/zapi-service";
+
 interface NewSubscriptionEmailProps {
     customerName: string;
     accessToken: string;
 }
 
-const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
+const NewSubscriptionEmail = async (props: NewSubscriptionEmailProps) => {
     const { customerName, accessToken } = props;
+
+    const alertPhone = "64992214800"
 
     return (
         <Html lang="pt-BR">
@@ -32,7 +36,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
 
                         {/* Header */}
                         <Section style={{
-                            background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+                            background: "linear-gradient(135deg, #3988ee 0%, #16a34a 100%)",
                             borderRadius: "8px 8px 0 0",
                             padding: "40px 0 20px 0",
                             textAlign: "center"
@@ -84,7 +88,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                 backgroundColor: "#f9fafb",
                                 padding: "30px",
                                 borderRadius: "8px",
-                                borderLeft: "4px solid #22c55e",
+                                borderLeft: "4px solid #3988ee",
                                 marginBottom: "30px"
                             }}>
                                 <Text style={{
@@ -150,7 +154,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                 <Button
                                     href={`https://${process.env.NEXT_PUBLIC_DOMAIN || 'sermonario.site'}/${accessToken}`}
                                     style={{
-                                        backgroundColor: "#22c55e",
+                                        backgroundColor: "#3988ee",
                                         color: "#ffffff",
                                         padding: "16px 32px",
                                         borderRadius: "6px",
@@ -209,7 +213,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                             <Text style={{ margin: "0 0 20px 0" }}>
                                 <a href="mailto:sermonario@gmail.com"
                                     style={{
-                                        color: "#22c55e",
+                                        color: "#3988ee",
                                         textDecoration: "none",
                                         fontWeight: "bold"
                                     }}>
@@ -226,7 +230,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                             }}>
                                 © 2025 Sermonário. Todos os direitos reservados.<br />
                                 Desenvolvido por <a href="https://synqia.com.br" style={{
-                                    color: "#22c55e",
+                                    color: "#3988ee",
                                     textDecoration: "none",
                                     fontWeight: "bold"
                                 }}>Synqia</a>
@@ -237,6 +241,18 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
             </Tailwind>
         </Html>
     );
-};
+
+    // Mensagem WhatsApp para usuários existentes
+    await sendWhatsappMessage(alertPhone,
+        `Olá, Leomir! 👋
+
+Mais uma venda realizada no Sermonário. 🤑🎉
+
+ `
+    );
+}
+
+
+
 
 export default NewSubscriptionEmail;
