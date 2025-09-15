@@ -97,7 +97,7 @@ const NewSubscriptionEmail = async (props: NewSubscriptionEmailProps) => {
                                     fontSize: "16px",
                                     lineHeight: 1.6
                                 }}>
-                                    Agradecemos por escolher o Sermonário para organizar suas pregações! 💚
+                                    Agradecemos por escolher o Sermonário para organizar suas pregações! 💙
                                 </Text>
                                 <Text style={{
                                     margin: 0,
@@ -164,34 +164,10 @@ const NewSubscriptionEmail = async (props: NewSubscriptionEmailProps) => {
                                         display: "inline-block"
                                     }}
                                 >
-                                    ✨ Acessar o meu Sermonário
+                                    👉🏼 Acessar o meu Sermonário
                                 </Button>
                             </div>
 
-                            {/* Additional info */}
-                            <div style={{
-                                backgroundColor: "#eff6ff",
-                                padding: "20px",
-                                borderRadius: "8px",
-                                border: "1px solid #dbeafe"
-                            }}>
-                                <Text style={{
-                                    margin: "0 0 10px 0",
-                                    color: "#1e40af",
-                                    fontSize: "14px",
-                                    fontWeight: "bold"
-                                }}>
-                                    💡 Dica:
-                                </Text>
-                                <Text style={{
-                                    margin: 0,
-                                    color: "#1e3a8a",
-                                    fontSize: "14px",
-                                    lineHeight: 1.5
-                                }}>
-                                    Após acessar o Sermonário, você terá acesso a todas as funcionalidades ilimitadas e vitalícias, incluindo a geração de sermões com IA!
-                                </Text>
-                            </div>
 
                         </Section>
 
