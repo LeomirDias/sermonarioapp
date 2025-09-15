@@ -25,7 +25,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
             <Head>
                 <title>Acesse seu Sermonário</title>
             </Head>
-            <Preview>Bem-vindo (a) ao Sermonário! Seu pagamento foi efetivado.</Preview>
+            <Preview>Parabéns por adquirir o Sermonário! Seu pagamento foi efetivado.</Preview>
             <Tailwind>
                 <Body style={{ fontFamily: "Arial, sans-serif", backgroundColor: "#f4f4f4", margin: 0, padding: 0 }}>
                     <Container style={{ maxWidth: "600px", margin: "0 auto", backgroundColor: "#ffffff", borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
@@ -43,7 +43,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                 fontSize: "32px",
                                 fontWeight: "bold"
                             }}>
-                                Sermonário
+                                Sermonário App
                             </Heading>
                             <Text style={{
                                 margin: "10px 0 0 0",
@@ -51,7 +51,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                 fontSize: "16px",
                                 opacity: 0.9
                             }}>
-                                Seu Sermonário
+                                Seu estruturador de sermões com IA
                             </Text>
                         </Section>
 
@@ -60,7 +60,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
 
                             {/* Welcome message */}
                             <div style={{ textAlign: "center", marginBottom: "30px" }}>
-                                <div style={{ fontSize: "48px", marginBottom: "20px" }}>👋</div>
+                                <div style={{ fontSize: "48px", marginBottom: "20px" }}>📖</div>
                                 <Heading style={{
                                     margin: "0 0 10px 0",
                                     color: "#1f2937",
@@ -93,7 +93,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                     fontSize: "16px",
                                     lineHeight: 1.6
                                 }}>
-                                    Agradecemos por escolher o Sermonário para organizar seu dia a dia! 💚
+                                    Agradecemos por escolher o Sermonário para organizar suas pregações! 💚
                                 </Text>
                                 <Text style={{
                                     margin: 0,
@@ -101,7 +101,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                     fontSize: "16px",
                                     lineHeight: 1.6
                                 }}>
-                                    Para começar a usar todos os recursos da nossa plataforma, você precisa acessar o link abaixo:
+                                    Para começar a usar todos os recursos, acesse seu link exclusivo e vitalício:
                                 </Text>
                             </div>
 
@@ -120,7 +120,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                     fontSize: "16px",
                                     fontWeight: "bold"
                                 }}>
-                                    🔑 Seu Token de Acesso Vitalício:
+                                    🔗 Seu link de acesso vitalício:
                                 </Text>
                                 <div style={{
                                     backgroundColor: "#ffffff",
@@ -133,7 +133,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                     wordBreak: "break-all",
                                     marginBottom: "10px"
                                 }}>
-                                    {accessToken}
+                                    sermonario.site/{accessToken}
                                 </div>
                                 <Text style={{
                                     margin: 0,
@@ -141,14 +141,14 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                     fontSize: "12px",
                                     fontStyle: "italic"
                                 }}>
-                                    Guarde este token com segurança! Ele é seu acesso vitalício ao Sermonário.
+                                    Guarde este link com segurança! Ele é seu acesso vitalício ao Sermonário.
                                 </Text>
                             </div>
 
                             {/* Call to action button */}
                             <div style={{ textAlign: "center", margin: "40px 0" }}>
                                 <Button
-                                    href={`https://${process.env.NEXT_PUBLIC_DOMAIN || 'xn--sermonrio-51a.site'}/${accessToken}`}
+                                    href={`https://${process.env.NEXT_PUBLIC_DOMAIN || 'sermonario.site'}/${accessToken}`}
                                     style={{
                                         backgroundColor: "#22c55e",
                                         color: "#ffffff",
@@ -160,7 +160,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                         display: "inline-block"
                                     }}
                                 >
-                                    ✨ Acessar o Sermonário
+                                    ✨ Acessar o meu Sermonário
                                 </Button>
                             </div>
 
@@ -185,7 +185,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                     fontSize: "14px",
                                     lineHeight: 1.5
                                 }}>
-                                    Após acessar o Sermonário, você terá acesso a todas as funcionalidades do Sermonário, incluindo agendamento inteligente, lembretes automáticos e muito mais!
+                                    Após acessar o Sermonário, você terá acesso a todas as funcionalidades ilimitadas e vitalícias, incluindo a geração de sermões com IA!
                                 </Text>
                             </div>
 
@@ -204,45 +204,19 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                 color: "#6b7280",
                                 fontSize: "14px"
                             }}>
-                                Precisa de ajuda? Entre em contato conosco:
+                                Precisa de ajuda? Entre em contato com o nosso suporte:
                             </Text>
                             <Text style={{ margin: "0 0 20px 0" }}>
-                                <a href="https://wa.me/64992834346" style={{
-                                    color: "#22c55e",
-                                    textDecoration: "none",
-                                    fontWeight: "bold"
-                                }}>
-                                    Suporte Sermonário
+                                <a href="mailto:sermonario@gmail.com"
+                                    style={{
+                                        color: "#22c55e",
+                                        textDecoration: "none",
+                                        fontWeight: "bold"
+                                    }}>
+                                    📥 Suporte Sermonário
                                 </a>
                             </Text>
-                            {/* 
-                            {/* Social links 
-                            <div style={{ marginBottom: "20px" }}>
-                                <a href="https://wa.me/64992834346?text=Olá! Preciso de ajuda com a minha assinatura Sermonário." style={{
-                                    display: "inline-block",
-                                    margin: "0 10px",
-                                    color: "#6b7280",
-                                    textDecoration: "none"
-                                }}>
-                                    📱 WhatsApp
-                                </a>
-                                <a href="suporteigenda@gmail.com" style={{
-                                    display: "inline-block",
-                                    margin: "0 10px",
-                                    color: "#6b7280",
-                                    textDecoration: "none"
-                                }}>
-                                    📧 Email
-                                </a>
-                                <a href={`https://${process.env.NEXT_PUBLIC_DOMAIN || 'xn--sermonrio-51a.site'}/authentication`} style={{
-                                    display: "inline-block",
-                                    margin: "0 10px",
-                                    color: "#6b7280",
-                                    textDecoration: "none"
-                                }}>
-                                    🌐 Website
-                                </a>
-                            </div> */}
+
 
                             <Text style={{
                                 margin: 0,
@@ -251,10 +225,13 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                 lineHeight: 1.4
                             }}>
                                 © 2025 Sermonário. Todos os direitos reservados.<br />
-                                Este email foi enviado para você porque assinou nossos serviços.
+                                Desenvolvido por <a href="https://synqia.com.br" style={{
+                                    color: "#22c55e",
+                                    textDecoration: "none",
+                                    fontWeight: "bold"
+                                }}>Synqia</a>
                             </Text>
                         </Section>
-
                     </Container>
                 </Body>
             </Tailwind>
