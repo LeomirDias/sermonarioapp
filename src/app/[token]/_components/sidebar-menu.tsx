@@ -528,7 +528,7 @@ export default function SidebarMenu({ sermonData, onImport, onClear }: SidebarMe
                         asChild
                         className="fixed bottom-4 left-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-primary hover:text-white z-50"
                     >
-                        <a href="mailto:sermonario@gmail.com" className="flex items-center gap-2 px-4 py-2">
+                        <a href="mailto:sermonarioapp@gmail.com" className="flex items-center gap-2 px-4 py-2">
                             <Mail className="w-8 h-8" />
                         </a>
                     </Button>

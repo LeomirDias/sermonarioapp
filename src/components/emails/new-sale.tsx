@@ -184,7 +184,7 @@ const NewSubscriptionEmail = async (props: NewSubscriptionEmailProps) => {
                                 Precisa de ajuda? Entre em contato com o nosso suporte:
                             </Text>
                             <Text style={{ margin: "0 0 20px 0" }}>
-                                <a href="mailto:sermonario@gmail.com"
+                                <a href="mailto:sermonarioapp@gmail.com"
                                     style={{
                                         color: "#3988ee",
                                         textDecoration: "none",

@@ -682,7 +682,7 @@ export default function SermonBuilder({ user, email }: SermonBuilderProps) {
                 asChild
                 className="fixed hidden md:block bottom-4 right-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-primary hover:text-white z-50"
             >
-                <Link href="mailto:sermonario@gmail.com" className="flex gap-2 px-4 py-2">
+                <Link href="mailto:sermonarioapp@gmail.com" className="flex gap-2 px-4 py-2">
                     <Mail className="w-8 h-8 block md:hidden" />
                     <span className="hidden sm:inline">Precisa de ajuda?</span>
                 </Link>

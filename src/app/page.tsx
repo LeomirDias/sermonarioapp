@@ -89,7 +89,7 @@ export default function Home() {
             <div className="space-y-2">
 
               <Button variant="outline" size="sm" asChild className="w-full hover:bg-primary hover:text-white">
-                <a href="mailto:sermonario@gmail.com">
+                <a href="mailto:sermonarioapp@gmail.com">
                   <Mail className="w-4 h-4 mr-2" />
                   Email
                 </a>
