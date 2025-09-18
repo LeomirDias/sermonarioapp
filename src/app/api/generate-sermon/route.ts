@@ -6,7 +6,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
-        const { titulo, tema, versiculo, textoVersiculo, objetivo } = await req.json();
+        const { titulo, tema, versiculo, textoVersiculo, objetivo, data: dataSermao } = await req.json();
 
         const prompt = `
 Você é um assistente especialista em preparar sermões evangélicos completos, claros e aplicáveis para igrejas.
@@ -16,7 +16,7 @@ Instruções:
 - Desenvolva cada seção de forma objetiva, mas detalhada, trazendo exemplos práticos e aplicações claras.
 - Use uma introdução envolvente, que chame a atenção e desperte curiosidade.
 - Na exposição bíblica, explique o contexto histórico e cultural, faça análise do texto e use versículos de apoio.
-- Nos pontos principais, crie tópicos bem estruturados, baseados no tema e conectados ao versículo.
+- Nos pontos principais, crie 3-5 tópicos bem estruturados, baseados no tema e conectados ao versículo. Cada ponto deve ser uma string clara e objetiva.
 - Nas aplicações práticas, traga exemplos relevantes para a vida pessoal, família, igreja e sociedade.
 - Na conclusão, faça um resumo do sermão, incentive uma ação prática e encerre com uma oração final bíblica e contextualizada.
 - Em anotações, adicione ilustrações, citações de autores cristãos, dados ou observações que possam enriquecer a mensagem.
@@ -42,7 +42,11 @@ Formato esperado:
       "analiseTexto": "",
       "versiculosApoio": []
     },
-    "pontosPrincipais": [],
+    "pontosPrincipais": [
+      "Primeiro ponto principal do sermão",
+      "Segundo ponto principal do sermão", 
+      "Terceiro ponto principal do sermão"
+    ],
     "aplicacaoPratica": {
       "vidaPessoal": "",
       "familia": "",
@@ -68,6 +72,9 @@ Dados do sermão:
 - Tema: ${tema}
 - Versículo: ${versiculo} - ${textoVersiculo}
 - Objetivo: ${objetivo}
+- Data: ${dataSermao || 'Data não especificada'}
+
+IMPORTANTE: Use a data fornecida no campo "data" do JSON de resposta. Se não houver data fornecida, deixe o campo "data" vazio.
 
 Responda somente em JSON válido.
 `;

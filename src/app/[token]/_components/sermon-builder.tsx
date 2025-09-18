@@ -79,7 +79,8 @@ export default function SermonBuilder({ user, email }: SermonBuilderProps) {
                     tema: sermonData.theme,
                     versiculo: sermonData.mainVerse,
                     textoVersiculo: sermonData.verseText,
-                    objetivo: sermonData.objective
+                    objetivo: sermonData.objective,
+                    data: sermonData.date
                 })
             })
 
@@ -92,7 +93,7 @@ export default function SermonBuilder({ user, email }: SermonBuilderProps) {
             // Mapear a resposta da API para o formato do componente
             const mappedData = {
                 title: generatedSermon.titulo || sermonData.title,
-                date: generatedSermon.data || sermonData.date,
+                date: generatedSermon.data || sermonData.date || new Date().toISOString().split('T')[0],
                 theme: generatedSermon.tema || sermonData.theme,
                 mainVerse: generatedSermon.versiculoPrincipal || sermonData.mainVerse,
                 verseText: generatedSermon.textoVersiculo || sermonData.verseText,
@@ -110,8 +111,8 @@ export default function SermonBuilder({ user, email }: SermonBuilderProps) {
                         ? generatedSermon.estrutura.exposicaoBiblica.versiculosApoio.join('\n')
                         : (generatedSermon.estrutura?.exposicaoBiblica?.versiculosApoio || sermonData.exposition.supportVerses)
                 },
-                mainPoints: Array.isArray(generatedSermon.estrutura?.pontosPrincipais)
-                    ? generatedSermon.estrutura.pontosPrincipais
+                mainPoints: Array.isArray(generatedSermon.estrutura?.pontosPrincipais) && generatedSermon.estrutura.pontosPrincipais.length > 0
+                    ? generatedSermon.estrutura.pontosPrincipais.filter((point: string) => point && typeof point === 'string' && point.trim() !== '')
                     : sermonData.mainPoints,
                 application: {
                     personal: generatedSermon.estrutura?.aplicacaoPratica?.vidaPessoal || sermonData.application.personal,
