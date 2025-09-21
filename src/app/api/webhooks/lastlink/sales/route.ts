@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 import NewSubscriptionEmail from "@/components/emails/new-sale";
 import { db } from "@/db";
 import { accessTokensTable } from "@/db/schema";
-import { sendWhatsappMessage } from "@/lib/zapi-service";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const LASTLINK_WEBHOOK_SECRET_SALES = process.env.LASTLINK_WEBHOOK_SECRET_SALES!;
@@ -22,16 +21,12 @@ export async function POST(req: NextRequest) {
     // só processa o body depois que validar o secret
     const body = await req.json();
 
-    const alertPhone = "64992214800";
-
     function generateAccessToken(): string {
         return `serm_${uuidv4()}_${Date.now()}`;
     }
     const data = body?.Data;
     const buyer = data?.Buyer;
-    ;
     const accessToken = generateAccessToken();
-    ;
 
     const subscriptionData = {
         id: buyer.Id,
@@ -58,14 +53,6 @@ export async function POST(req: NextRequest) {
         }),
     });
 
-    // Mensagem WhatsApp para usuários existentes
-    await sendWhatsappMessage(alertPhone,
-        `Olá, Leomir! 👋
-
-Mais uma venda realizada no Sermonário. 🤑🎉
-
- `
-    );
     return NextResponse.json({ received: true });
 
 }
