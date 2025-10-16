@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 Mais uma venda realizada no Cakto. 🤑🎉
 Cliente: ${customer.name}
 Email: ${customer.email}
-Valor: ${data?.order?.total}
+Valor: R$ ${Number(data?.order?.total).toFixed(2)}
  `
     );
 

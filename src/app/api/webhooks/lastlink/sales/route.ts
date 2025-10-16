@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
 Mais uma venda realizada no Lastlink. 🤑🎉
 Cliente: ${buyer.Name}
 Email: ${buyer.Email}
-Valor: ${purchase?.OriginalPrice.Value}
+Valor: R$ ${Number(purchase?.OriginalPrice.Value).toFixed(2)}
  `
     );
 
