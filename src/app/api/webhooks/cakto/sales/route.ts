@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
 
     const data = body?.data;
     const customer = data?.customer;
+    const offer = data?.offer;
 
     // Gera token de acesso vitalício
     const accessToken = generateAccessToken();
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
 Mais uma venda realizada no Cakto. 🤑🎉
 Cliente: ${customer.name}
 Email: ${customer.email}
-Valor: R$ ${Number(data?.order?.total).toFixed(2)}
+Valor: R$ ${Number(offer?.price).toFixed(2)}
  `
     );
 
