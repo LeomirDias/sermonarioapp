@@ -120,7 +120,7 @@ const ReimbursementEmail = async (props: ReimbursementEmailProps) => {
                                     fontSize: "16px",
                                     fontWeight: "bold"
                                 }}>
-                                    � Suporte Sermonário
+                                    📧 Suporte Sermonário
                                 </Text>
                                 <div style={{ textAlign: "center", margin: "40px 0" }}>
                                     <Button
