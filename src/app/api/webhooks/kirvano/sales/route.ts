@@ -19,8 +19,8 @@ const alertPhone = "+5564992214800"
 export async function POST(req: NextRequest) {
     const body = await req.json();
 
-    //Define os dados do body
-    const data = body?.data;
+    //Define os dados do body (os dados estão diretamente no body, não em body.data)
+    const data = body;
     //Define os dados do cliente
     const customer = data?.customer;
     //Define os dados do oferta
@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
     // Dados do token de acesso
     const tokenData = {
         id: `${uuidv4()}`,
-        name: customer.name || "",
-        email: customer.email,
+        name: customer?.name || "",
+        email: customer?.email || "",
         token: accessToken,
         status: "active",
         createdAt: new Date(),
@@ -46,10 +46,10 @@ export async function POST(req: NextRequest) {
     // Mensagem para novos usuários
     await resend.emails.send({
         from: `${process.env.NAME_FOR_EMAIL_SENDER} <${process.env.EMAIL_FOR_EMAIL_SENDER}>`,
-        to: customer.email,
+        to: customer?.email || "",
         subject: "Acesse seu Sermonário!",
         react: NewSubscriptionEmail({
-            customerName: customer.name || "",
+            customerName: customer?.name || "",
             accessToken: accessToken,
         }),
     });
@@ -59,11 +59,11 @@ export async function POST(req: NextRequest) {
         `Olá, Leomir! 👋
 
 Mais uma venda realizada no Kirvano. 🤑🎉
-Cliente: ${customer.name}
-Email: ${customer.email}
-Valor: R$ ${Number(value).toFixed(2)}
+Cliente: ${customer?.name || "N/A"}
+Email: ${customer?.email || "N/A"}
+Valor: ${value || "N/A"}
 
-O de ${customer.name} acesso ao Sermonário foi ativado.
+O acesso de ${customer?.name || "o cliente"} ao Sermonário foi ativado.
  `
     );
 
