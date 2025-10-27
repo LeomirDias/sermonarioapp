@@ -134,7 +134,7 @@ const NewSubscriptionEmail = async (props: NewSubscriptionEmailProps) => {
                                     wordBreak: "break-all",
                                     marginBottom: "10px"
                                 }}>
-                                    www.sermonario.site/{accessToken}
+                                    https://www.sermonario.site/{accessToken}
                                 </div>
                                 <Text style={{
                                     margin: 0,
@@ -149,7 +149,7 @@ const NewSubscriptionEmail = async (props: NewSubscriptionEmailProps) => {
                             {/* Call to action button */}
                             <div style={{ textAlign: "center", margin: "40px 0" }}>
                                 <Button
-                                    href={`www.sermonario.site/${accessToken}`}
+                                    href={`https://www.sermonario.site/${accessToken}`}
                                     style={{
                                         backgroundColor: "#3988ee",
                                         color: "#ffffff",
