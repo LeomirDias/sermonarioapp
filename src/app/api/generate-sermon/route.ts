@@ -1,155 +1,131 @@
 import { NextResponse } from "next/server";
+// Importe o SDK oficial da OpenAI
+import OpenAI from "openai";
 
-export async function GET() {
-    return NextResponse.json({ message: "API funcionando" });
-}
+// Inicialize o cliente (ele lê a API Key do process.env.OPENAI_API_KEY automaticamente)
+const openai = new OpenAI();
+
+// Puxe o ID do seu assistente do .env
+const assistantId = process.env.OPENAI_ASSISTANT_ID;
 
 export async function POST(req: Request) {
-    try {
-        const { titulo, tema, versiculo, textoVersiculo, objetivo, data: dataSermao } = await req.json();
+  if (!assistantId) {
+    console.error("OPENAI_ASSISTANT_ID não está configurado.");
+    return NextResponse.json(
+      { error: "Configuração do assistente não encontrada." },
+      { status: 500 },
+    );
+  }
 
-        const prompt = `
-Você é um assistente especialista em preparar sermões evangélicos completos, claros e aplicáveis para igrejas.
+  try {
+    const { titulo, tema, versiculo, textoVersiculo, objetivo, dataSermao } =
+      await req.json();
 
-Instruções:
-- Escreva como um sermão pronto para ser pregado em uma igreja evangélica, com linguagem simples, bíblica e inspiradora.
-- Desenvolva cada seção de forma objetiva, mas detalhada, trazendo exemplos práticos e aplicações claras.
-- Use uma introdução envolvente, que chame a atenção e desperte curiosidade.
-- Na exposição bíblica, explique o contexto histórico e cultural, faça análise do texto e use versículos de apoio.
-- Nos pontos principais, crie 3-5 tópicos bem estruturados, baseados no tema e conectados ao versículo. Cada ponto deve ser uma string clara e objetiva.
-- Nas aplicações práticas, traga exemplos relevantes para a vida pessoal, família, igreja e sociedade.
-- Na conclusão, faça um resumo do sermão, incentive uma ação prática e encerre com uma oração final bíblica e contextualizada.
-- Em anotações, adicione ilustrações, citações de autores cristãos, dados ou observações que possam enriquecer a mensagem.
-- Responda somente em JSON válido, sem explicações adicionais.
+    // 1. Formate a mensagem do usuário (APENAS os dados dinâmicos)
+    // Isso é tudo o que você enviará, economizando milhares de tokens.
+    const userMessageContent = `
+            Por favor, gere o sermão com os seguintes dados:
+            - Título: ${titulo}
+            - Tema: ${tema}
+            - Versículo: ${versiculo}
+            - Texto do Versículo: ${textoVersiculo}
+            - Objetivo: ${objetivo}
+            - Data: ${dataSermao || ""}
 
-Formato esperado:
-{
-  "titulo": "",
-  "data": "",
-  "tema": "",
-  "versiculoPrincipal": "",
-  "textoVersiculo": "",
-  "objetivo": "",
-  "estrutura": {
-    "introducao": {
-      "abertura": "",
-      "contexto": "",
-      "gancho": ""
-    },
-    "exposicaoBiblica": {
-      "contextoHistorico": "",
-      "contextoCultural": "",
-      "analiseTexto": "",
-      "versiculosApoio": []
-    },
-    "pontosPrincipais": [
-      "Primeiro ponto principal do sermão",
-      "Segundo ponto principal do sermão", 
-      "Terceiro ponto principal do sermão"
-    ],
-    "aplicacaoPratica": {
-      "vidaPessoal": "",
-      "familia": "",
-      "igreja": "",
-      "sociedade": ""
-    },
-    "conclusao": {
-      "resumo": "",
-      "chamadaAcao": "",
-      "oracaoFinal": ""
-    },
-    "anotacoes": {
-      "ilustracoes": "",
-      "estatisticas": "",
-      "citacoes": "",
-      "observacoes": ""
+            IMPORTANTE: Use a data fornecida no campo "data" do JSON de resposta. Se a data fornecida for vazia ou nula, deixe o campo "data" como uma string vazia "".
+        `;
+
+    // 2. Crie uma nova "Thread" (uma nova conversa)
+    const thread = await openai.beta.threads.create();
+
+    // 3. Adicione a mensagem do usuário a essa Thread
+    await openai.beta.threads.messages.create(thread.id, {
+      role: "user",
+      content: userMessageContent,
+    });
+
+    // 4. Crie um "Run" (peça ao assistente para processar a thread)
+    // Usamos 'createAndPoll' para esperar síncronamente pela resposta.
+    // Isso é perfeito para uma rota de API que precisa responder na hora.
+    const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
+      assistant_id: assistantId,
+      response_format: { type: "json_object" }, // Garante o JSON
+      temperature: 0.7, // Adiciona criatividade controlada
+    });
+
+    // 6. Verifique se o "Run" foi concluído com sucesso
+    if (run.status === "completed") {
+      if (run.usage) {
+        console.log(`Tokens gastos nesta requisição:`);
+        console.log(`- Prompt (Entrada): ${run.usage.prompt_tokens} tokens`);
+        console.log(
+          `- Completion (Saída): ${run.usage.completion_tokens} tokens`,
+        );
+        console.log(`- Total: ${run.usage.total_tokens} tokens`);
+
+        // Se você tiver um banco de dados, aqui é o local
+        // ideal para salvar 'run.usage' e associar ao
+        // usuário que fez a requisição, para seu controle de custos.
+      }
+
+      // 7. Se sim, liste as mensagens da thread
+      const messages = await openai.beta.threads.messages.list(run.thread_id);
+
+      // 8. Encontre a última mensagem (que é a resposta do assistente)
+      const lastMessage = messages.data
+        .filter(
+          (msg) => msg.role === "assistant" && msg.content[0].type === "text",
+        )
+        .pop();
+
+      if (lastMessage && lastMessage.content[0].type === "text") {
+        // 9. Extraia o conteúdo de texto (que será nossa string JSON)
+        const jsonResponse = lastMessage.content[0].text.value;
+
+        // 10. Tente fazer o parse (deve funcionar graças ao response_format)
+        try {
+          const parsedJson = JSON.parse(jsonResponse);
+          // 11. Retorne o JSON final para o seu frontend
+          return NextResponse.json(parsedJson);
+        } catch (e) {
+          console.error("Erro ao fazer parse do JSON do assistente:", e);
+          console.error("String recebida:", jsonResponse);
+          return NextResponse.json(
+            { error: "Erro ao processar JSON da IA" },
+            { status: 500 },
+          );
+        }
+      } else {
+        return NextResponse.json(
+          { error: "Nenhuma resposta de texto do assistente encontrada" },
+          { status: 500 },
+        );
+      }
+    } else {
+      // O Run falhou (ex: erro no modelo, conteúdo bloqueado, etc.)
+      console.error("Run não completou:", run.status, run.last_error);
+      return NextResponse.json(
+        {
+          error: "Falha ao gerar resposta da IA",
+          details: run.last_error?.message,
+        },
+        { status: 500 },
+      );
     }
+  } catch (error) {
+    console.error("Erro geral na rota do assistente:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Erro desconhecido";
+    return NextResponse.json(
+      { error: "Erro interno do servidor", details: errorMessage },
+      { status: 500 },
+    );
   }
 }
 
-Dados do sermão:
-- Título: ${titulo}
-- Tema: ${tema}
-- Versículo: ${versiculo} - ${textoVersiculo}
-- Objetivo: ${objetivo}
-- Data: ${dataSermao || 'Data não especificada'}
-
-IMPORTANTE: Use a data fornecida no campo "data" do JSON de resposta. Se não houver data fornecida, deixe o campo "data" vazio.
-
-Responda somente em JSON válido.
-`;
-
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-            },
-            body: JSON.stringify({
-                model: "gpt-4o-mini",
-                messages: [{ role: "user", content: prompt }],
-                temperature: 0.7,
-            }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Erro da API OpenAI:', errorData);
-            return NextResponse.json({ error: "Erro na API OpenAI", details: errorData }, { status: response.status });
-        }
-
-        const data = await response.json();
-
-        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-            console.error('Resposta inválida da API OpenAI:', data);
-            return NextResponse.json({ error: "Resposta inválida da API" }, { status: 500 });
-        }
-
-        const result = data.choices[0].message.content;
-
-        // Limpar o resultado removendo blocos de código markdown se existirem
-        let cleanResult = result.trim();
-
-        // Se o resultado começa com ```json, extrair apenas o JSON
-        if (cleanResult.startsWith('```json')) {
-            const jsonStart = cleanResult.indexOf('{');
-            const jsonEnd = cleanResult.lastIndexOf('}') + 1;
-            if (jsonStart !== -1 && jsonEnd > jsonStart) {
-                cleanResult = cleanResult.substring(jsonStart, jsonEnd);
-            }
-        }
-        // Se o resultado começa com ```, extrair o conteúdo entre os blocos
-        else if (cleanResult.startsWith('```')) {
-            const lines = cleanResult.split('\n');
-            const jsonLines = [];
-            let inJsonBlock = false;
-
-            for (const line of lines) {
-                if (line.trim().startsWith('```') && !inJsonBlock) {
-                    inJsonBlock = true;
-                    continue;
-                }
-                if (line.trim().startsWith('```') && inJsonBlock) {
-                    break;
-                }
-                if (inJsonBlock) {
-                    jsonLines.push(line);
-                }
-            }
-            cleanResult = jsonLines.join('\n');
-        }
-
-        try {
-            const parsedResult = JSON.parse(cleanResult);
-            return NextResponse.json(parsedResult);
-        } catch (parseError) {
-            console.error('Erro ao fazer parse do JSON:', parseError);
-            console.error('Conteúdo recebido:', result);
-            console.error('Conteúdo limpo:', cleanResult);
-            return NextResponse.json({ error: "Erro ao processar resposta da IA" }, { status: 500 });
-        }
-    } catch (error) {
-        console.error('Erro geral:', error);
-        return NextResponse.json({ error: "Erro interno do servidor", details: error instanceof Error ? error.message : 'Erro desconhecido' }, { status: 500 });
-    }
+// Não se esqueça da rota GET se precisar dela
+export async function GET() {
+  return NextResponse.json({
+    message: "API de Sermões (Assistente) funcionando",
+  });
 }
