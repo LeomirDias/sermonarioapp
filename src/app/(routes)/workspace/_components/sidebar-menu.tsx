@@ -2,7 +2,6 @@
 
 import jsPDF from "jspdf";
 import {
-  BookOpen,
   Download,
   Eye,
   FileEdit,
@@ -595,7 +594,7 @@ export default function SidebarMenu({
         </Button>
 
         <div className="mt-4 flex w-full items-center justify-center gap-2 border-t-1 border-gray-200 pt-4">
-          <Button
+          {/* <Button
             variant="outline"
             size="sm"
             className="hover:border-primary hover:text-primary flex w-1/2 items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:shadow-xl"
@@ -607,11 +606,11 @@ export default function SidebarMenu({
               <BookOpen className="h-4 w-4" />
               Loja de Sermões
             </Link>
-          </Button>
+          </Button> */}
           <Button
             variant="outline"
             size="sm"
-            className="hover:border-primary hover:text-primary flex w-1/2 items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:shadow-xl"
+            className="hover:border-primary hover:text-primary flex w-full items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:shadow-xl"
           >
             <Link
               href="/tutorials"
