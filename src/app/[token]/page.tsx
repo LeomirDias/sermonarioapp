@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 interface TokenPageProps {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }
 
 export default async function TokenPage({ params }: TokenPageProps) {
