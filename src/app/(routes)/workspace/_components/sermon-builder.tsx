@@ -240,7 +240,7 @@ export default function SermonBuilder({ user, email }: SermonBuilderProps) {
       <div className="relative mx-auto max-w-5xl px-4 pb-20 lg:ml-100 lg:pb-4">
         <div className="p-4">
           <h1 className="mb-2 text-3xl font-bold text-gray-900">
-            Olá, {user}!
+            Olá, {user.split(" ")[0]}
           </h1>
           <p className="text-sm text-gray-600">
             Seja bem vindo ao seu Sermonário.
