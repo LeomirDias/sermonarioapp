@@ -2,22 +2,35 @@
 
 import jsPDF from "jspdf";
 import {
-  Download,
   Eye,
-  FileEdit,
+  FileDownIcon,
   FileText,
-  Mail,
-  Menu,
+  History,
   MonitorPlay,
   Trash2,
-  Upload,
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface SermonData {
   title: string;
@@ -59,52 +72,13 @@ interface SermonData {
 
 interface SidebarMenuProps {
   sermonData: SermonData;
-  onImport: (data: SermonData) => void;
   onClear: () => void;
   onExport: () => void;
 }
 
-export default function SidebarMenu({
-  sermonData,
-  onImport,
-  onClear,
-}: SidebarMenuProps) {
+export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
   const [showPreview, setShowPreview] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = JSON.parse(e.target?.result as string);
-          onImport(data);
-          alert("Sermão importado com sucesso!");
-        } catch {
-          alert("Erro ao importar arquivo. Verifique se é um JSON válido.");
-        }
-      };
-      reader.readAsText(file);
-    }
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleExportJSON = () => {
-    const dataStr = JSON.stringify(sermonData, null, 2);
-    const dataUri =
-      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
-    const exportFileDefaultName = `sermao-${sermonData.title || "sem-titulo"}.json`;
-
-    const linkElement = document.createElement("a");
-    linkElement.setAttribute("href", dataUri);
-    linkElement.setAttribute("download", exportFileDefaultName);
-    linkElement.click();
-  };
+  const [showClearDialog, setShowClearDialog] = useState(false);
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
@@ -479,61 +453,218 @@ export default function SidebarMenu({
     doc.save(`sermao-${sermonData.title || "sem-titulo"}.pdf`);
   };
 
+  const handleClear = () => {
+    setShowClearDialog(true);
+  };
+
+  const handleConfirmClear = () => {
+    onClear();
+    setShowClearDialog(false);
+  };
+
+  const PreviewContent = () => (
+    <div className="space-y-3 text-sm">
+      {/* Informações Básicas */}
+      {sermonData.title && (
+        <div>
+          <strong>Título:</strong> {sermonData.title}
+        </div>
+      )}
+      {sermonData.date && (
+        <div>
+          <strong>Data:</strong> {sermonData.date}
+        </div>
+      )}
+      {sermonData.theme && (
+        <div>
+          <strong>Tema:</strong> {sermonData.theme}
+        </div>
+      )}
+      {sermonData.mainVerse && (
+        <div>
+          <strong>Versículo:</strong> {sermonData.mainVerse}
+        </div>
+      )}
+      {sermonData.verseText && (
+        <div>
+          <strong>Texto do Versículo:</strong> {sermonData.verseText}
+        </div>
+      )}
+      {sermonData.objective && (
+        <div>
+          <strong>Objetivo:</strong> {sermonData.objective}
+        </div>
+      )}
+
+      {/* Introdução */}
+      {(sermonData.introduction.greeting ||
+        sermonData.introduction.context ||
+        sermonData.introduction.hook) && (
+        <div className="mt-3">
+          <h4 className="mb-2 font-semibold text-blue-600">INTRODUÇÃO</h4>
+          {sermonData.introduction.greeting && (
+            <div className="mb-1">
+              <strong>Abertura:</strong> {sermonData.introduction.greeting}
+            </div>
+          )}
+          {sermonData.introduction.context && (
+            <div className="mb-1">
+              <strong>Contexto:</strong> {sermonData.introduction.context}
+            </div>
+          )}
+          {sermonData.introduction.hook && (
+            <div className="mb-1">
+              <strong>Gancho:</strong> {sermonData.introduction.hook}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Exposição Bíblica */}
+      {(sermonData.exposition.historicalContext ||
+        sermonData.exposition.culturalContext ||
+        sermonData.exposition.textAnalysis ||
+        sermonData.exposition.supportVerses) && (
+        <div className="mt-3">
+          <h4 className="mb-2 font-semibold text-blue-600">
+            EXPOSIÇÃO BÍBLICA
+          </h4>
+          {sermonData.exposition.historicalContext && (
+            <div className="mb-1">
+              <strong>Contexto Histórico:</strong>{" "}
+              {sermonData.exposition.historicalContext}
+            </div>
+          )}
+          {sermonData.exposition.culturalContext && (
+            <div className="mb-1">
+              <strong>Contexto Cultural:</strong>{" "}
+              {sermonData.exposition.culturalContext}
+            </div>
+          )}
+          {sermonData.exposition.textAnalysis && (
+            <div className="mb-1">
+              <strong>Análise do Texto:</strong>{" "}
+              {sermonData.exposition.textAnalysis}
+            </div>
+          )}
+          {sermonData.exposition.supportVerses && (
+            <div className="mb-1">
+              <strong>Versículos de Apoio:</strong>{" "}
+              {sermonData.exposition.supportVerses}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Pontos Principais */}
+      {sermonData.mainPoints.some((point) => point.trim()) && (
+        <div className="mt-3">
+          <h4 className="mb-2 font-semibold text-blue-600">
+            PONTOS PRINCIPAIS
+          </h4>
+          {sermonData.mainPoints.map(
+            (point, index) =>
+              point.trim() && (
+                <div key={index} className="mb-1">
+                  <strong>Ponto {index + 1}:</strong> {point}
+                </div>
+              ),
+          )}
+        </div>
+      )}
+
+      {/* Aplicação Prática */}
+      {(sermonData.application.personal ||
+        sermonData.application.family ||
+        sermonData.application.church ||
+        sermonData.application.society) && (
+        <div className="mt-3">
+          <h4 className="mb-2 font-semibold text-blue-600">
+            APLICAÇÃO PRÁTICA
+          </h4>
+          {sermonData.application.personal && (
+            <div className="mb-1">
+              <strong>Vida Pessoal:</strong> {sermonData.application.personal}
+            </div>
+          )}
+          {sermonData.application.family && (
+            <div className="mb-1">
+              <strong>Família:</strong> {sermonData.application.family}
+            </div>
+          )}
+          {sermonData.application.church && (
+            <div className="mb-1">
+              <strong>Igreja:</strong> {sermonData.application.church}
+            </div>
+          )}
+          {sermonData.application.society && (
+            <div className="mb-1">
+              <strong>Sociedade:</strong> {sermonData.application.society}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Conclusão */}
+      {(sermonData.conclusion.summary ||
+        sermonData.conclusion.callToAction ||
+        sermonData.conclusion.finalPrayer) && (
+        <div className="mt-3">
+          <h4 className="mb-2 font-semibold text-blue-600">CONCLUSÃO</h4>
+          {sermonData.conclusion.summary && (
+            <div className="mb-1">
+              <strong>Resumo:</strong> {sermonData.conclusion.summary}
+            </div>
+          )}
+          {sermonData.conclusion.callToAction && (
+            <div className="mb-1">
+              <strong>Chamada à Ação:</strong>{" "}
+              {sermonData.conclusion.callToAction}
+            </div>
+          )}
+          {sermonData.conclusion.finalPrayer && (
+            <div className="mb-1">
+              <strong>Oração Final:</strong> {sermonData.conclusion.finalPrayer}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Anotações */}
+      {(sermonData.notes.illustrations ||
+        sermonData.notes.statistics ||
+        sermonData.notes.quotes ||
+        sermonData.notes.general) && (
+        <div className="mt-3">
+          <h4 className="mb-2 font-semibold text-blue-600">ANOTAÇÕES</h4>
+          {sermonData.notes.illustrations && (
+            <div className="mb-1">
+              <strong>Ilustrações:</strong> {sermonData.notes.illustrations}
+            </div>
+          )}
+          {sermonData.notes.statistics && (
+            <div className="mb-1">
+              <strong>Estatísticas:</strong> {sermonData.notes.statistics}
+            </div>
+          )}
+          {sermonData.notes.quotes && (
+            <div className="mb-1">
+              <strong>Citações:</strong> {sermonData.notes.quotes}
+            </div>
+          )}
+          {sermonData.notes.general && (
+            <div className="mb-1">
+              <strong>Observações:</strong> {sermonData.notes.general}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   const MenuContent = () => (
     <>
       <div className="space-y-3">
-        {/* Importar JSON */}
-        <Card className="hover:border-primary border-transparent shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50">
-          <CardHeader className="flex items-center justify-center">
-            <CardTitle className="text-md text-primary flex flex-col items-center gap-2">
-              <div className="bg-primary rounded-full p-2">
-                <FileEdit className="h-5 w-5 text-white" />
-              </div>
-              Editar um Sermão
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-primary hover:border-primary/50 hover:text-primary flex w-full items-center gap-2 text-white shadow-md hover:bg-blue-50 hover:shadow-xl"
-              onClick={handleUploadClick}
-            >
-              <Upload className="h-4 w-4" />
-              Escolher Arquivo
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Exportar JSON */}
-        <Card className="hover:border-primary border-transparent shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50">
-          <CardHeader className="flex items-center justify-center">
-            <CardTitle className="text-md text-primary flex flex-col items-center gap-2">
-              <div className="bg-primary rounded-full p-2">
-                <Download className="h-5 w-5 text-white" />
-              </div>
-              Salvar sermão editável
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-primary hover:border-primary/50 hover:text-primary flex w-full items-center gap-2 text-white shadow-md hover:bg-blue-50 hover:shadow-xl"
-              onClick={handleExportJSON}
-            >
-              Baixar JSON
-            </Button>
-          </CardContent>
-        </Card>
-
         {/* Visualizar Estrutura */}
         <Card className="hover:border-primary border-transparent shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50">
           <CardHeader className="flex items-center justify-center">
@@ -583,34 +714,30 @@ export default function SidebarMenu({
           variant="outline"
           size="sm"
           className="flex w-full items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:border-red-500 hover:bg-red-50 hover:text-red-600 hover:shadow-xl"
-          onClick={() => {
-            if (confirm("Tem certeza que deseja limpar todos os dados?")) {
-              onClear();
-            }
-          }}
+          onClick={handleClear}
         >
           <Trash2 className="h-4 w-4" />
           Limpar Tudo
         </Button>
 
         <div className="mt-4 flex w-full items-center justify-center gap-2 border-t-1 border-gray-200 pt-4">
-          {/* <Button
+          <Button
             variant="outline"
             size="sm"
             className="hover:border-primary hover:text-primary flex w-1/2 items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:shadow-xl"
           >
             <Link
-              href={`/marketplace`}
+              href={`/history`}
               className="flex items-center justify-center gap-2"
             >
-              <BookOpen className="h-4 w-4" />
-              Loja de Sermões
+              <History className="h-4 w-4" />
+              Meu sermões
             </Link>
-          </Button> */}
+          </Button>
           <Button
             variant="outline"
             size="sm"
-            className="hover:border-primary hover:text-primary flex w-full items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:shadow-xl"
+            className="hover:border-primary hover:text-primary flex w-1/2 items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:shadow-xl"
           >
             <Link
               href="/tutorials"
@@ -619,7 +746,7 @@ export default function SidebarMenu({
               className="flex items-center justify-center gap-2"
             >
               <MonitorPlay className="h-4 w-4" />
-              Tutorial
+              Tutoriais
             </Link>
           </Button>
         </div>
@@ -629,65 +756,89 @@ export default function SidebarMenu({
 
   return (
     <>
-      {/* Trigger button para mobile - canto superior direito */}
-      <Button
-        variant="default"
-        size="sm"
-        className="bg-primary fixed right-3 bottom-4 z-50 h-10 w-10 rounded-full border-transparent text-white shadow-sm md:hidden"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-      >
-        <Menu className="h-8 w-8" />
-      </Button>
-
-      {/* Overlay para mobile */}
-      {isMobileMenuOpen && (
-        <div
-          className="bg-opacity-50 fixed inset-0 z-40 bg-gray-50 md:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-            className="hover:bg-primary fixed bottom-4 left-4 z-50 rounded-full shadow-lg transition-all duration-200 hover:text-white hover:shadow-xl"
-          >
-            <a
-              href="mailto:sermonarioapp@gmail.com"
-              className="flex items-center gap-2 px-4 py-2"
-            >
-              <Mail className="h-8 w-8" />
-            </a>
-          </Button>
-        </div>
-      )}
-
-      {/* Menu lateral - Desktop (sempre visível) */}
-      <div className="fixed top-0 left-0 z-40 hidden h-full w-100 overflow-y-auto bg-none p-4 md:block">
+      {/* Menu lateral - Desktop (apenas em telas lg+) */}
+      <div className="fixed top-0 left-0 z-40 hidden h-full w-100 overflow-y-auto bg-none p-4 lg:block">
         <MenuContent />
       </div>
 
-      {/* Menu lateral - Mobile (colapsável) */}
-      <div
-        className={`fixed top-0 right-0 z-50 h-full w-80 transform overflow-y-auto border-l-1 border-gray-200 bg-gray-50 p-4 shadow-xl transition-transform duration-300 ease-in-out md:hidden ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-gray-800">Menu</h2>
+      {/* Menu horizontal - Mobile/Tablet (abaixo de lg) */}
+      <div className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-between border-t border-gray-200 bg-white px-2 py-2 shadow-lg lg:hidden">
+        {/* Esquerda: Limpar + Visualizar */}
+        <div className="flex gap-1">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-red-50 hover:text-red-600"
+            onClick={handleClear}
+            title="Limpar Tudo"
           >
-            <X className="h-5 w-5" />
+            <Trash2 className="h-7 w-7" />
+            <span className="text-xs">Limpar</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hover:text-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50"
+            onClick={() => setShowPreview(true)}
+            title="Visualizar Prévia"
+          >
+            <Eye className="h-7 w-7" />
+            <span className="text-xs">Prévia</span>
           </Button>
         </div>
-        <MenuContent />
+
+        {/* Centro: PDF */}
+        <Button
+          variant="default"
+          size="sm"
+          className="bg-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 rounded-full px-2 py-1 shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
+          onClick={handleExportPDF}
+          title="Salvar em PDF"
+        >
+          <FileDownIcon className="h-7 w-7 text-white" />
+          <span className="text-xs text-white">PDF</span>
+        </Button>
+
+        {/* Direita: Histórico + Tutoriais */}
+        <div className="flex gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hover:text-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50"
+            asChild
+            title="Meus Sermões"
+          >
+            <Link
+              href="/history"
+              className="flex flex-col items-center justify-center gap-1"
+            >
+              <History className="h-7 w-7" />
+              <span className="text-xs">Meus Sermões</span>
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hover:text-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50"
+            asChild
+            title="Tutoriais"
+          >
+            <Link
+              href="/tutorials"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center gap-1"
+            >
+              <MonitorPlay className="h-7 w-7" />
+              <span className="text-xs">Tutoriais</span>
+            </Link>
+          </Button>
+        </div>
       </div>
 
-      {/* Preview da estrutura */}
+      {/* Preview da estrutura - Desktop (painel fixo) */}
       {showPreview && (
-        <div className="fixed top-4 right-4 z-40 max-h-200 w-100 overflow-y-auto rounded-lg bg-white p-4 shadow-lg">
+        <div className="fixed top-4 right-4 z-40 hidden max-h-[calc(100vh-2rem)] w-100 overflow-y-auto rounded-lg bg-white p-4 shadow-lg lg:block">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-semibold">Prévia do Sermão</h3>
             <Button
@@ -696,212 +847,46 @@ export default function SidebarMenu({
               className="bg-none text-gray-600 transition-all duration-300 hover:scale-105 hover:bg-white hover:text-red-500"
               onClick={() => setShowPreview(false)}
             >
-              Fechar
+              <X className="h-4 w-4" />
             </Button>
           </div>
-          <div className="space-y-3 text-sm">
-            {/* Informações Básicas */}
-            {sermonData.title && (
-              <div>
-                <strong>Título:</strong> {sermonData.title}
-              </div>
-            )}
-            {sermonData.date && (
-              <div>
-                <strong>Data:</strong> {sermonData.date}
-              </div>
-            )}
-            {sermonData.theme && (
-              <div>
-                <strong>Tema:</strong> {sermonData.theme}
-              </div>
-            )}
-            {sermonData.mainVerse && (
-              <div>
-                <strong>Versículo:</strong> {sermonData.mainVerse}
-              </div>
-            )}
-            {sermonData.verseText && (
-              <div>
-                <strong>Texto do Versículo:</strong> {sermonData.verseText}
-              </div>
-            )}
-            {sermonData.objective && (
-              <div>
-                <strong>Objetivo:</strong> {sermonData.objective}
-              </div>
-            )}
-
-            {/* Introdução */}
-            {(sermonData.introduction.greeting ||
-              sermonData.introduction.context ||
-              sermonData.introduction.hook) && (
-              <div className="mt-3">
-                <h4 className="mb-2 font-semibold text-blue-600">INTRODUÇÃO</h4>
-                {sermonData.introduction.greeting && (
-                  <div className="mb-1">
-                    <strong>Abertura:</strong>{" "}
-                    {sermonData.introduction.greeting}
-                  </div>
-                )}
-                {sermonData.introduction.context && (
-                  <div className="mb-1">
-                    <strong>Contexto:</strong> {sermonData.introduction.context}
-                  </div>
-                )}
-                {sermonData.introduction.hook && (
-                  <div className="mb-1">
-                    <strong>Gancho:</strong> {sermonData.introduction.hook}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Exposição Bíblica */}
-            {(sermonData.exposition.historicalContext ||
-              sermonData.exposition.culturalContext ||
-              sermonData.exposition.textAnalysis ||
-              sermonData.exposition.supportVerses) && (
-              <div className="mt-3">
-                <h4 className="mb-2 font-semibold text-blue-600">
-                  EXPOSIÇÃO BÍBLICA
-                </h4>
-                {sermonData.exposition.historicalContext && (
-                  <div className="mb-1">
-                    <strong>Contexto Histórico:</strong>{" "}
-                    {sermonData.exposition.historicalContext}
-                  </div>
-                )}
-                {sermonData.exposition.culturalContext && (
-                  <div className="mb-1">
-                    <strong>Contexto Cultural:</strong>{" "}
-                    {sermonData.exposition.culturalContext}
-                  </div>
-                )}
-                {sermonData.exposition.textAnalysis && (
-                  <div className="mb-1">
-                    <strong>Análise do Texto:</strong>{" "}
-                    {sermonData.exposition.textAnalysis}
-                  </div>
-                )}
-                {sermonData.exposition.supportVerses && (
-                  <div className="mb-1">
-                    <strong>Versículos de Apoio:</strong>{" "}
-                    {sermonData.exposition.supportVerses}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Pontos Principais */}
-            {sermonData.mainPoints.some((point) => point.trim()) && (
-              <div className="mt-3">
-                <h4 className="mb-2 font-semibold text-blue-600">
-                  PONTOS PRINCIPAIS
-                </h4>
-                {sermonData.mainPoints.map(
-                  (point, index) =>
-                    point.trim() && (
-                      <div key={index} className="mb-1">
-                        <strong>Ponto {index + 1}:</strong> {point}
-                      </div>
-                    ),
-                )}
-              </div>
-            )}
-
-            {/* Aplicação Prática */}
-            {(sermonData.application.personal ||
-              sermonData.application.family ||
-              sermonData.application.church ||
-              sermonData.application.society) && (
-              <div className="mt-3">
-                <h4 className="mb-2 font-semibold text-blue-600">
-                  APLICAÇÃO PRÁTICA
-                </h4>
-                {sermonData.application.personal && (
-                  <div className="mb-1">
-                    <strong>Vida Pessoal:</strong>{" "}
-                    {sermonData.application.personal}
-                  </div>
-                )}
-                {sermonData.application.family && (
-                  <div className="mb-1">
-                    <strong>Família:</strong> {sermonData.application.family}
-                  </div>
-                )}
-                {sermonData.application.church && (
-                  <div className="mb-1">
-                    <strong>Igreja:</strong> {sermonData.application.church}
-                  </div>
-                )}
-                {sermonData.application.society && (
-                  <div className="mb-1">
-                    <strong>Sociedade:</strong> {sermonData.application.society}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Conclusão */}
-            {(sermonData.conclusion.summary ||
-              sermonData.conclusion.callToAction ||
-              sermonData.conclusion.finalPrayer) && (
-              <div className="mt-3">
-                <h4 className="mb-2 font-semibold text-blue-600">CONCLUSÃO</h4>
-                {sermonData.conclusion.summary && (
-                  <div className="mb-1">
-                    <strong>Resumo:</strong> {sermonData.conclusion.summary}
-                  </div>
-                )}
-                {sermonData.conclusion.callToAction && (
-                  <div className="mb-1">
-                    <strong>Chamada à Ação:</strong>{" "}
-                    {sermonData.conclusion.callToAction}
-                  </div>
-                )}
-                {sermonData.conclusion.finalPrayer && (
-                  <div className="mb-1">
-                    <strong>Oração Final:</strong>{" "}
-                    {sermonData.conclusion.finalPrayer}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Anotações */}
-            {(sermonData.notes.illustrations ||
-              sermonData.notes.statistics ||
-              sermonData.notes.quotes ||
-              sermonData.notes.general) && (
-              <div className="mt-3">
-                <h4 className="mb-2 font-semibold text-blue-600">ANOTAÇÕES</h4>
-                {sermonData.notes.illustrations && (
-                  <div className="mb-1">
-                    <strong>Ilustrações:</strong>{" "}
-                    {sermonData.notes.illustrations}
-                  </div>
-                )}
-                {sermonData.notes.statistics && (
-                  <div className="mb-1">
-                    <strong>Estatísticas:</strong> {sermonData.notes.statistics}
-                  </div>
-                )}
-                {sermonData.notes.quotes && (
-                  <div className="mb-1">
-                    <strong>Citações:</strong> {sermonData.notes.quotes}
-                  </div>
-                )}
-                {sermonData.notes.general && (
-                  <div className="mb-1">
-                    <strong>Observações:</strong> {sermonData.notes.general}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <PreviewContent />
         </div>
       )}
+
+      {/* Preview da estrutura - Mobile (modal) */}
+      <div className="lg:hidden">
+        <Dialog open={showPreview} onOpenChange={setShowPreview}>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Prévia do Sermão</DialogTitle>
+            </DialogHeader>
+            <PreviewContent />
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Dialog de confirmação para limpar dados */}
+      <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Limpeza</AlertDialogTitle>
+            <AlertDialogDescription>
+              Está ação excluirá todos os dados do sermão atual e não poderá ser
+              desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmClear}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Limpar Tudo
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

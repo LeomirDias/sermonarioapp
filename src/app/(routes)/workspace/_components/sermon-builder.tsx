@@ -30,8 +30,7 @@ interface SermonBuilderProps {
 }
 
 export default function SermonBuilder({ user, email }: SermonBuilderProps) {
-  const { sermonData, updateSermonData, clearSermonData, importSermonData } =
-    useSermonStorage();
+  const { sermonData, updateSermonData, clearSermonData } = useSermonStorage();
 
   const [collapsedSections, setCollapsedSections] = useState<
     Record<string, boolean>
@@ -240,12 +239,11 @@ export default function SermonBuilder({ user, email }: SermonBuilderProps) {
     <div className="relative min-h-screen bg-gray-50 py-4">
       <SidebarMenu
         sermonData={sermonData}
-        onImport={importSermonData}
         onClear={clearSermonData}
         onExport={handleExport}
       />
 
-      <div className="relative mx-auto max-w-5xl px-4 md:ml-100">
+      <div className="relative mx-auto max-w-5xl px-4 pb-20 lg:ml-100 lg:pb-4">
         <div className="p-4">
           <h1 className="mb-2 text-3xl font-bold text-gray-900">
             Olá, {user}!
