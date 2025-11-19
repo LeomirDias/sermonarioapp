@@ -39,14 +39,14 @@ const UPDATES = [
         type: "improvement",
         title: "Menu interativo",
         description:
-          "O menu lateral agora é interativo e você pode acessar todas as funcionalidades do sistema de forma mais fácil e intuitiva.",
+          "O menu agora é interativo e mais acessível, você pode acessar todas as funcionalidades do sistema de forma mais fácil e intuitiva.",
         icon: <Menu className="h-5 w-5" />,
       },
       {
         type: "improvement",
-        title: "Melhoria na interface",
+        title: "Melhoria na interface e na navegação",
         description:
-          "A interface foi melhorada e agora é mais intuitiva e fácil de usar, com um design mais moderno e responsivo.",
+          "A interface e a navegação foram melhoradas e agora são mais intuitivas e fáceis de usar, com um design mais moderno e responsivo.",
         icon: <Settings className="h-5 w-5" />,
       },
       {
@@ -137,10 +137,10 @@ export function UpdatesDialog({
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
               <div>
-                <DialogTitle className="text-2xl">
+                <DialogTitle className="text-center text-2xl">
                   Novidades no Sermonário!
                 </DialogTitle>
-                <DialogDescription className="mt-1 text-base">
+                <DialogDescription className="mt-1 text-center text-base">
                   Confira as novas funcionalidades e melhorias
                 </DialogDescription>
               </div>

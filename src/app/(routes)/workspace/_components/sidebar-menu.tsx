@@ -10,7 +10,6 @@ import {
   MonitorPlay,
   MoreVertical,
   Trash2,
-  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -827,35 +826,15 @@ export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
         </div>
       </div>
 
-      {/* Preview da estrutura - Desktop (painel fixo) */}
-      {showPreview && (
-        <div className="fixed top-4 right-4 z-40 hidden max-h-[calc(100vh-2rem)] w-100 overflow-y-auto rounded-lg bg-white p-4 shadow-lg lg:block">
-          <div className="mb-2 flex items-center justify-between">
-            <h3 className="font-semibold">Prévia do Sermão</h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="bg-none text-gray-600 transition-all duration-300 hover:scale-105 hover:bg-white hover:text-red-500"
-              onClick={() => setShowPreview(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+      {/* Preview da estrutura - Modal centralizado */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Prévia do Sermão</DialogTitle>
+          </DialogHeader>
           <PreviewContent />
-        </div>
-      )}
-
-      {/* Preview da estrutura - Mobile (modal) */}
-      <div className="lg:hidden">
-        <Dialog open={showPreview} onOpenChange={setShowPreview}>
-          <DialogContent className="max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Prévia do Sermão</DialogTitle>
-            </DialogHeader>
-            <PreviewContent />
-          </DialogContent>
-        </Dialog>
-      </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog de confirmação para limpar dados */}
       <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
