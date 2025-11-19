@@ -1,15 +1,7 @@
 "use client";
 
-import {
-  ChevronDown,
-  ChevronUp,
-  Loader2,
-  Mail,
-  Plus,
-  Sparkles,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Plus, Sparkles } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 
 import SidebarMenu from "@/app/(routes)/workspace/_components/sidebar-menu";
@@ -907,20 +899,6 @@ export default function SermonBuilder({ user, email }: SermonBuilderProps) {
           Synqia
         </a>
       </p>
-      <Button
-        variant="outline"
-        size="sm"
-        asChild
-        className="hover:bg-primary fixed right-4 bottom-4 z-50 hidden rounded-full shadow-lg transition-all duration-200 hover:text-white hover:shadow-xl md:block"
-      >
-        <Link
-          href="mailto:sermonarioapp@gmail.com"
-          className="flex gap-2 px-4 py-2"
-        >
-          <Mail className="block h-8 w-8 md:hidden" />
-          <span className="hidden sm:inline">Precisa de ajuda?</span>
-        </Link>
-      </Button>
     </div>
   );
 }

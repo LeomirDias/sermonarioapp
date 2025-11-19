@@ -5,9 +5,10 @@ import {
   Bell,
   Eye,
   FileDownIcon,
-  FileText,
   History,
+  Mail,
   MonitorPlay,
+  MoreVertical,
   Trash2,
   X,
 } from "lucide-react";
@@ -25,13 +26,18 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   UpdatesDialog,
   useHasUnseenUpdates,
@@ -669,142 +675,46 @@ export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
     </div>
   );
 
-  const MenuContent = () => (
-    <>
-      <div className="space-y-3">
-        {/* Visualizar Estrutura */}
-        <Card className="hover:border-primary border-transparent shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50">
-          <CardHeader className="flex items-center justify-center">
-            <CardTitle className="text-md text-primary flex flex-col items-center gap-2">
-              <div className="bg-primary rounded-full p-2">
-                <Eye className="h-5 w-5 text-white" />
-              </div>
-              Visualizar prévia do sermão
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-primary hover:border-primary/50 hover:text-primary flex w-full items-center gap-2 text-white shadow-md hover:bg-blue-50 hover:shadow-xl"
-              onClick={() => setShowPreview(!showPreview)}
-            >
-              {showPreview ? "Ocultar" : "Mostrar"} Estrutura
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Exportar PDF */}
-        <Card className="hover:border-primary border-transparent shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50">
-          <CardHeader className="flex items-center justify-center">
-            <CardTitle className="text-md text-primary flex flex-col items-center gap-2">
-              <div className="bg-primary rounded-full p-2">
-                <FileText className="h-5 w-5 text-white" />
-              </div>
-              Salvar sermão em PDF
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-primary hover:border-primary/50 hover:text-primary flex w-full items-center gap-2 text-white shadow-md hover:bg-blue-50 hover:shadow-xl"
-              onClick={handleExportPDF}
-            >
-              Gerar PDF
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Limpar Dados */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex w-full items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:border-red-500 hover:bg-red-50 hover:text-red-600 hover:shadow-xl"
-          onClick={handleClear}
-        >
-          <Trash2 className="h-4 w-4" />
-          Limpar Tudo
-        </Button>
-
-        <div className="mt-4 flex w-full items-center justify-center gap-2 border-t-1 border-gray-200 pt-4">
-          <Button
-            variant="outline"
-            size="sm"
-            className="hover:border-primary hover:text-primary flex w-1/2 items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:shadow-xl"
-          >
-            <Link
-              href={`/history`}
-              className="flex items-center justify-center gap-2"
-            >
-              <History className="h-4 w-4" />
-              Meu sermões
-            </Link>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="hover:border-primary hover:text-primary flex w-1/2 items-center gap-2 shadow-md transition-all duration-300 hover:scale-105 hover:bg-blue-50 hover:shadow-xl"
-          >
-            <Link
-              href="/tutorials"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2"
-            >
-              <MonitorPlay className="h-4 w-4" />
-              Tutoriais
-            </Link>
-          </Button>
-        </div>
-      </div>
-    </>
-  );
-
   return (
     <>
-      {/* Ícone de Atualizações - Fixo no canto superior direito (apenas em telas lg+) */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 right-4 z-50 hidden h-12 w-12 rounded-full bg-white shadow-lg transition-all duration-300 hover:scale-110 hover:bg-blue-50 hover:shadow-xl lg:flex"
-        onClick={() => setShowUpdates(true)}
-        title="Atualizações"
-      >
-        <Bell className="h-5 w-5 text-gray-700" />
-        {hasUnseenUpdates && (
-          <span className="absolute -top-0.5 -right-0.5 h-3 w-3 animate-pulse rounded-full bg-red-500" />
-        )}
-      </Button>
-
-      {/* Menu lateral - Desktop (apenas em telas lg+) */}
-      <div className="fixed top-0 left-0 z-40 hidden h-full w-100 overflow-y-auto bg-none p-4 lg:block">
-        <MenuContent />
-      </div>
-
-      {/* Menu horizontal - Mobile/Tablet (abaixo de lg) */}
-      <div className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-between border-t border-gray-200 bg-white px-2 py-2 shadow-lg lg:hidden">
-        {/* Esquerda: Limpar + Visualizar */}
-        <div className="flex gap-1">
+      {/* Barra horizontal unificada - Mobile e Desktop */}
+      <div className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-t border-gray-200 bg-white px-2 py-2 shadow-lg lg:justify-center lg:gap-3 lg:px-4 lg:py-3">
+        {/* Esquerda: Limpar + Visualizar + Suporte (desktop) */}
+        <div className="flex gap-1 lg:gap-2">
           <Button
             variant="ghost"
             size="sm"
-            className="flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-red-50 hover:text-red-600"
+            className="flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-red-50 hover:text-red-600 lg:min-h-[80px] lg:min-w-[80px]"
             onClick={handleClear}
             title="Limpar Tudo"
           >
-            <Trash2 className="h-7 w-7" />
-            <span className="text-xs">Limpar</span>
+            <Trash2 className="h-7 w-7 lg:h-8 lg:w-8" />
+            <span className="text-xs lg:text-sm">Limpar</span>{" "}
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="hover:text-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50"
+            className="hover:text-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50 lg:min-h-[80px] lg:min-w-[80px]"
             onClick={() => setShowPreview(true)}
             title="Visualizar Prévia"
           >
-            <Eye className="h-7 w-7" />
-            <span className="text-xs">Prévia</span>
+            <Eye className="h-7 w-7 lg:h-8 lg:w-8" />
+            <span className="text-xs lg:text-sm">Prévia</span>{" "}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hover:text-primary hidden h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50 lg:flex lg:min-h-[80px] lg:min-w-[80px]"
+            asChild
+            title="Suporte"
+          >
+            <Link
+              href="mailto:sermonarioapp@gmail.com"
+              className="flex flex-col items-center justify-center gap-1"
+            >
+              <Mail className="h-7 w-7 lg:h-8 lg:w-8" />
+              <span className="text-xs lg:text-sm">Suporte</span>
+            </Link>
           </Button>
         </div>
 
@@ -812,20 +722,20 @@ export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
         <Button
           variant="default"
           size="sm"
-          className="bg-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 rounded-full px-2 py-1 shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
+          className="bg-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 rounded-full px-2 py-1 shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl lg:min-h-[80px] lg:min-w-[80px]"
           onClick={handleExportPDF}
           title="Salvar em PDF"
         >
-          <FileDownIcon className="h-7 w-7 text-white" />
-          <span className="text-xs text-white">PDF</span>
+          <FileDownIcon className="h-7 w-7 text-white lg:h-8 lg:w-8" />
+          <span className="text-xs lg:text-sm">PDF</span>{" "}
         </Button>
 
-        {/* Direita: Histórico + Tutoriais */}
-        <div className="flex gap-1">
+        {/* Direita: Histórico + Tutoriais (desktop) + Atualizações (desktop) */}
+        <div className="flex gap-1 lg:gap-2">
           <Button
             variant="ghost"
             size="sm"
-            className="hover:text-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50"
+            className="hover:text-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50 lg:min-h-[80px] lg:min-w-[80px]"
             asChild
             title="Meus Sermões"
           >
@@ -833,14 +743,15 @@ export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
               href="/history"
               className="flex flex-col items-center justify-center gap-1"
             >
-              <History className="h-7 w-7" />
-              <span className="text-xs">Meus Sermões</span>
+              <History className="h-7 w-7 lg:h-8 lg:w-8" />
+              <span className="text-xs lg:text-sm">Meus Sermões</span>
             </Link>
           </Button>
+          {/* Botão Tutoriais - Desktop */}
           <Button
             variant="ghost"
             size="sm"
-            className="hover:text-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50"
+            className="hover:text-primary hidden h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50 lg:flex lg:min-h-[80px] lg:min-w-[80px]"
             asChild
             title="Tutoriais"
           >
@@ -850,9 +761,68 @@ export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
               rel="noopener noreferrer"
               className="flex flex-col items-center justify-center gap-1"
             >
-              <MonitorPlay className="h-7 w-7" />
-              <span className="text-xs">Tutoriais</span>
+              <MonitorPlay className="h-7 w-7 lg:h-8 lg:w-8" />
+              <span className="text-xs lg:text-sm">Tutoriais</span>
             </Link>
+          </Button>
+          {/* Dropdown Menu "Mais" - Mobile */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hover:text-primary flex h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50 lg:hidden"
+                title="Mais"
+              >
+                <MoreVertical className="h-7 w-7" />
+                <span className="text-xs">Mais</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="top" align="end" className="w-48">
+              <DropdownMenuItem asChild>
+                <Link
+                  href="/tutorials"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <MonitorPlay className="h-4 w-4" />
+                  <span>Tutoriais</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href="mailto:sermonarioapp@gmail.com"
+                  className="flex items-center gap-2"
+                >
+                  <Mail className="h-4 w-4" />
+                  <span>Suporte</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setShowUpdates(true)}
+                className="flex items-center gap-2"
+              >
+                <Bell className="h-4 w-4" />
+                <span>Novidades</span>
+                {hasUnseenUpdates && (
+                  <span className="ml-auto h-2 w-2 animate-pulse rounded-full bg-red-500" />
+                )}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hover:text-primary relative hidden h-auto min-h-[60px] w-auto min-w-[60px] flex-col items-center justify-center gap-1 px-2 py-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50 lg:flex lg:min-h-[80px] lg:min-w-[80px]"
+            onClick={() => setShowUpdates(true)}
+            title="Atualizações"
+          >
+            <Bell className="h-7 w-7 lg:h-8 lg:w-8" />
+            <span className="text-xs lg:text-sm">Novidades</span>
+            {hasUnseenUpdates && (
+              <span className="absolute -top-0.5 -right-0.5 h-3 w-3 animate-pulse rounded-full bg-red-500" />
+            )}
           </Button>
         </div>
       </div>
