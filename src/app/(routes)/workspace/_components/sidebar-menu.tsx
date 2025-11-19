@@ -743,7 +743,7 @@ export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
               className="flex flex-col items-center justify-center gap-1"
             >
               <History className="h-7 w-7 lg:h-8 lg:w-8" />
-              <span className="text-xs lg:text-sm">Meus Sermões</span>
+              <span className="text-xs lg:text-sm">Sermões</span>
             </Link>
           </Button>
           {/* Botão Tutoriais - Desktop */}
