@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { accessTokensTable, sermonsTable } from "@/db/schema";
+import { accessTokensTable, sermonLogsTable, sermonsTable } from "@/db/schema";
 import { getSession } from "@/lib/session";
 
 export async function deleteSermon(sermonId: string) {
@@ -35,7 +35,12 @@ export async function deleteSermon(sermonId: string) {
       return { error: "Você não tem permissão para excluir este sermão" };
     }
 
-    // Deletar o sermão
+    // Primeiro, excluir os logs relacionados ao sermão
+    await db
+      .delete(sermonLogsTable)
+      .where(eq(sermonLogsTable.sermon_id, sermonId));
+
+    // Depois, deletar o sermão
     await db.delete(sermonsTable).where(eq(sermonsTable.id, sermonId));
 
     return { success: true };

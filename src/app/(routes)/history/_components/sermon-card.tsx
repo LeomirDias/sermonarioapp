@@ -3,6 +3,7 @@
 import { Download, Eye, FileEdit, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { deleteSermon } from "@/actions/sermons/delete-sermon";
 import {
@@ -50,13 +51,14 @@ export default function SermonCard({ sermon, onDelete }: SermonCardProps) {
     try {
       const result = await deleteSermon(sermon.id);
       if (result.error) {
-        alert(result.error);
+        toast.error(result.error);
       } else {
+        toast.success("Sermão excluído com sucesso!");
         onDelete();
       }
     } catch (error) {
       console.error("Erro ao excluir sermão:", error);
-      alert("Erro ao excluir sermão");
+      toast.error("Erro ao excluir sermão");
     } finally {
       setIsDeleting(false);
       setShowDeleteDialog(false);
