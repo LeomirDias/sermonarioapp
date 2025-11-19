@@ -2,6 +2,7 @@
 
 import jsPDF from "jspdf";
 import {
+  Bell,
   Eye,
   FileDownIcon,
   FileText,
@@ -31,6 +32,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  UpdatesDialog,
+  useHasUnseenUpdates,
+} from "@/components/updates-dialog";
 
 interface SermonData {
   title: string;
@@ -79,6 +84,8 @@ interface SidebarMenuProps {
 export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
   const [showPreview, setShowPreview] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showUpdates, setShowUpdates] = useState(false);
+  const hasUnseenUpdates = useHasUnseenUpdates();
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
@@ -756,6 +763,20 @@ export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
 
   return (
     <>
+      {/* Ícone de Atualizações - Fixo no canto superior direito (apenas em telas lg+) */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-4 right-4 z-50 hidden h-12 w-12 rounded-full bg-white shadow-lg transition-all duration-300 hover:scale-110 hover:bg-blue-50 hover:shadow-xl lg:flex"
+        onClick={() => setShowUpdates(true)}
+        title="Atualizações"
+      >
+        <Bell className="h-5 w-5 text-gray-700" />
+        {hasUnseenUpdates && (
+          <span className="absolute -top-0.5 -right-0.5 h-3 w-3 animate-pulse rounded-full bg-red-500" />
+        )}
+      </Button>
+
       {/* Menu lateral - Desktop (apenas em telas lg+) */}
       <div className="fixed top-0 left-0 z-40 hidden h-full w-100 overflow-y-auto bg-none p-4 lg:block">
         <MenuContent />
@@ -887,6 +908,8 @@ export default function SidebarMenu({ sermonData, onClear }: SidebarMenuProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <UpdatesDialog open={showUpdates} onOpenChange={setShowUpdates} />
     </>
   );
 }

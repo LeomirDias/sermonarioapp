@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { UpdatesDialog } from "@/components/updates-dialog";
 import { useSermonStorage } from "@/hooks/useSermonStorage";
 
 interface SermonBuilderProps {
@@ -237,6 +238,7 @@ export default function SermonBuilder({ user, email }: SermonBuilderProps) {
 
   return (
     <div className="relative min-h-screen bg-gray-50 py-4">
+      <UpdatesDialog />
       <SidebarMenu
         sermonData={sermonData}
         onClear={clearSermonData}
